@@ -1,0 +1,10 @@
+window.hjSiteSettings = window.hjSiteSettings || {"testers_widgets":[],"polls":[],"recording_capture_keystrokes":true,"site_id":316747,"deferred_page_contents":[{"targeting":[{"negate":false,"pattern":"http:\/\/foodinger.in\/11oclock\/profile.php","match_operation":"contains","component":"url"},{"negate":false,"pattern":"tablet","match_operation":"exact","component":"device"}],"id":2308746},{"targeting":[{"negate":false,"pattern":"http:\/\/foodinger.in\/11oclock\/basket.php","match_operation":"contains","component":"url"},{"negate":false,"pattern":"tablet","match_operation":"exact","component":"device"}],"id":2308743}],"record_targeting_rules":[],"surveys":[],"heatmaps":[{"targeting":[{"negate":false,"pattern":"http:\/\/foodinger.in\/11oclock\/profile.php","match_operation":"contains","component":"url"}],"created_epoch_time":1477252467,"id":856346,"selector_version":0},{"targeting":[{"negate":false,"pattern":"http:\/\/foodinger.in\/11oclock\/basket.php","match_operation":"contains","component":"url"}],"created_epoch_time":1477252438,"id":856345,"selector_version":0},{"targeting":[{"negate":false,"pattern":"http:\/\/foodinger.in\/11oclock\/","match_operation":"simple","component":"url"}],"created_epoch_time":1477252375,"id":856344,"selector_version":0}],"feedback_widgets":[],"forms":[],"record":false,"r":1.0,"state_change_listen_mode":"manual"};
+
+window.hjBootstrap = window.hjBootstrap || function (scriptUrl) {
+    var s = document.createElement('script');
+    s.src = scriptUrl;
+    document.getElementsByTagName('head')[0].appendChild(s);
+    window.hjBootstrap = function() {};
+};
+
+hjBootstrap('https://script.hotjar.com/modules-4b3746a1ebd33bf90d8b72f800c2b1ec.js');

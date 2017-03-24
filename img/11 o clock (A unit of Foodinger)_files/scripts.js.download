@@ -1,0 +1,2423 @@
+;(function(window) {
+    
+    if(location.href.indexOf('basket.php') == -1 && location.href.indexOf('profile.php') == -1 && location.href.indexOf('menu.php') == -1 && location.href.indexOf('terms.php') == -1) {
+        if($(window).width() <= 767) {
+            window.location = "http://foodinger.in/11oclock/mobile";
+        }
+    } else if(location.href.indexOf('basket.php') == -1 && location.href.indexOf('profile.php') == -1 && location.href.indexOf('menu.php') != -1) {
+        if($(window).width() <= 767) {
+            window.location = "http://foodinger.in/11oclock/mobile/menu.php";
+        }
+    }
+    
+    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    GLOBAL VARS
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+    
+    var itemsInCart = {};
+    var MINIMUM_AMOUNT = 150;
+    
+    if($(window).width() > 768) {
+        var loginModal = $('[data-remodal-id=fd-11-o-clock-login-modal').remodal();
+    }
+    
+    var picker = new Pikaday({
+        field: document.getElementById('fd-11-o-clock-reg-dob'),
+        format: 'YYYY-MM-DD',
+        firstDay: 1,
+        defaultDate: new Date(2008, 12, 31),
+        minDate: new Date(1950, 01, 01),
+        maxDate: new Date(2008, 12, 31),
+        yearRange: [1950,2008]
+    });
+    $('.pika-single').css('z-index', '10001');
+    $('.fd-11-o-clock-tabs').animate({color: '#fff'});
+    
+    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    GLOBAL SCRIPTS
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+    
+    var opened_flag_array = [];
+    $.post('json/get-home-page-details.php', {
+        _v_id: '_v_id'
+    }, function(data) {
+        if(data.trim() != '') {
+            var response = jQuery.parseJSON(data);
+            opened_flag_array['flag'] = response['opened']['flag'];
+            opened_flag_array['next_opening_hour'] = response['opened']['next_opening_hour'];
+        }
+    });
+    
+    $('body').on('click', '.fd-11-o-clock-home-page-carousel img', function() {
+        $('#fd-11-o-clock-loader-bck').show();
+        var val = $(this).attr('value');
+        var carouselDescriptionModalInnerHtml = '';
+        
+        $.post('json/get-home-page-details.php', {
+            _v_id: _v_id
+        }, function(data) {
+            if(data.trim() != '') {
+                var response = jQuery.parseJSON(data);
+                
+                opened_flag_array['flag'] = response['opened']['flag'];
+                opened_flag_array['next_opening_hour'] = response['opened']['next_opening_hour'];
+                
+                carouselDescriptionModalInnerHtml += '<i class="material-icons">close</i>';
+                $.each(response['carousel'][val]['description'], function(index) {
+                    carouselDescriptionModalInnerHtml += '<p>' + response['carousel'][val]['description'][index] + '</p><br/>';
+                });
+                
+                if(response['carousel'][val]['link'] != '') {
+                    carouselDescriptionModalInnerHtml += '<a href="menu.php?cat=combos">See Menu</a>';
+                }
+            }
+        }).done(function() {
+            $('#fd-11-o-clock-loader-bck').hide();
+            $('#fd-11-o-clock-carousel-description-modal-cont > div').html(carouselDescriptionModalInnerHtml);
+            $('#fd-11-o-clock-carousel-description-modal-cont').show();
+        });
+    });
+    
+    function guid() {
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+          .toString(16)
+          .substring(1);
+      }
+      return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+    }
+    
+    function phoneNoValidation(str) {
+         var phoneNoReg = /^\d{10}$/;
+         return phoneNoReg.test(str);
+     }
+
+    function emailValidation(str) {
+        var emailReg = /^[(\w)\.\+\-\!\#\$\%\&\'\*\/\=\?\^\_\`\{\|\}\~]+@[(\w)-]+(\.(\w)+)+$/;
+        return emailReg.test(str);
+    }
+    
+    $('body').on('click', '#fd-11-o-clock-action-bar-login-btn', function() {
+        if(_u_id === undefined) {
+            loginModal.open();
+            $('#fd-11-o-clock-already-account-link').html('I am a new user');
+            $('#fd-11-o-clock-already-account-link').attr('id', 'fd-11-o-clock-new-user-link');
+            $('#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont:nth-child(2)').css('top', '1em');
+            $('.fd-11-o-clock-login-inp-cont').show();
+            $('.fd-11-o-clock-reg-inp-cont').hide();
+            $('.fd-11-o-clock-login-ins-cont > p.fd-11-o-clock-login-p').html('Login');
+        } else {
+            window.location = "http://foodinger.in/11oclock/profile.php?guid="+guid();
+        }
+    });
+    
+    $('body').on('click', '#fd-11-o-clock-action-bar-user-btn', function() {
+        if(_u_id === undefined) {
+            loginModal.open();
+        } else {
+            window.location = "http://foodinger.in/11oclock/profile.php?guid="+guid();
+        }
+    });
+    
+    var _v_id;
+    var _u_id;
+    
+    $.get('json/get-u-id.php', function(data) {
+        var response = jQuery.parseJSON(data);
+        if(response['status'] == 'login') {
+            $('#fd-11-o-clock-action-bar-login-btn').html('<img src="images/icons/user.png" alt="User Icon">');
+            $('#fd-11-o-clock-action-bar-login-btn').attr('id', 'fd-11-o-clock-action-bar-user-btn');
+            _u_id = response['__u_id'];
+        }
+    });
+    
+    var fp = new Fingerprint2().get(function(result, components) {
+        $.post('json/get-v-id.php', {
+            _ec: result,
+            resolution: components[4]['value'][0] + ' X ' + components[4]['value'][1],
+        }, function(data) {
+            _v_id = data.trim();
+        });
+    });
+    
+	'use strict';
+    
+    function _11_o_clock_toast(msg, type, timeout) {
+        if(type == 'success') {
+            $('#fd-11-o-clock-toast-cont > .fd-11-o-clock-toast-icon').html('done_all');
+            $('#fd-11-o-clock-toast-cont').css('background-color', 'rgba(0, 200, 40, 0.9)');
+        } else if(type == 'error') {
+            $('#fd-11-o-clock-toast-cont > .fd-11-o-clock-toast-icon').html('error');
+            $('#fd-11-o-clock-toast-cont').css('background-color', 'rgba(255, 40, 0, 0.9)');
+        }
+        
+        $('#fd-11-o-clock-toast-cont > .fd-11-o-clock-toast-msg').html(msg);
+        $('#fd-11-o-clock-toast-cont').slideDown();
+        setTimeout(function() {
+            $('#fd-11-o-clock-toast-cont').slideUp('slow');
+        }, timeout);
+    }
+    
+    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    HOME PAGE MENU CATEG CLICK
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+    $('body').on('click', '#fd-11-o-clock-menu-categ-home-page-cont > div > div > img', function() {
+        window.location = "http://foodinger.in/11oclock/menu.php?cat=" + $(this).attr('value');
+    });
+    
+    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    LOGIN AND REGISTRATION MODAL
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+    $('body').on('click', '#fd-11-o-clock-reg-create-btn', function(e) {
+        e.preventDefault();
+        var fullname = $('#fd-11-o-clock-reg-name').val();
+        var password = $('#fd-11-o-clock-reg-password').val();
+        var email = $('#fd-11-o-clock-reg-email').val();
+        var phone = $('#fd-11-o-clock-reg-phone').val();
+        var dob = $('#fd-11-o-clock-reg-dob').val();
+
+        var food_preference = $('input[name=fd-11-o-clock-reg-food-preference]:checked').val();
+
+        if(fullname != '' && password != '' && email != '' && phone != '' && dob != '') {
+            $.post('json/profile/register.php', {
+                _v_id: _v_id,
+                full_name: fullname,
+                phone: phone,
+                password: password,
+                dob: dob,
+                food_preference: food_preference,
+                email: email
+            }, function(data) {
+                var response = jQuery.parseJSON(data);
+                if(response['status'] == 'failure') {
+                    if(response['msg'] == 'email already exists') {
+                        _11_o_clock_toast('email already exists', 'error', 3000);
+                    } else if(response['msg'] == 'phone already exists') {
+                        _11_o_clock_toast('phone number already exists', 'error', 3000);
+                    }
+                } else {
+                    setTimeout(function() {
+                        window.location = location.href.replace(/#.+$/g, '') + '?guid=' + guid();
+                    }, 3000);
+                }
+            });
+        } else {
+            _11_o_clock_toast('All the fields are required', 'error', 3000);
+        }
+    });
+
+    $('body').on('click', '#fd-11-o-clock-login-btn', function(e) {
+        e.preventDefault();
+
+        var phone = $('#fd-11-o-clock-login-name').val();
+        var password = $('#fd-11-o-clock-login-password').val();
+
+        if(phone != '' && password != '') {
+            $.post('json/profile/login.php', {
+                phone: phone,
+                password: password
+            }, function(data) {
+                var response = jQuery.parseJSON(data);
+                if(response['status'] == 'success') {
+                    window.location = location.href.replace(/#.+$/g, '') + '?guid=' + guid();
+                } else {
+                    _11_o_clock_toast('Your phone or password is wrong, Please try again', 'error', 3000);
+                }
+            });
+        } else {
+            _11_o_clock_toast('Both the input are required to enter', 'error', 3000);
+        }
+    });
+
+    document.onkeydown = checkKeyPressed;
+    function checkKeyPressed(key) {
+        key = key || window.event;
+        if(key.keyCode == 13) {
+            if($('.fd-11-o-clock-login-inp-cont').css('display') != 'none') {
+                var phone = $('#fd-11-o-clock-login-name').val();
+                var password = $('#fd-11-o-clock-login-password').val();
+
+                if(phone != '' && password != '') {
+                    $.post('json/profile/login.php', {
+                        phone: phone,
+                        password: password
+                    }, function(data) {
+                        var response = jQuery.parseJSON(data);
+                        if(response['status'] == 'success') {
+                            window.location = location.href.replace(/#.+$/g, '') + '?guid=' + guid();
+                        } else {
+                            _11_o_clock_toast('Your phone or password is wrong, Please try again');
+                        }
+                    });
+                } else {
+                    _11_o_clock_toast('Both the input are required to enter', 'error', 3000);
+                }
+            } else if($('.fd-11-o-clock-reg-inp-cont').css('display') != 'none') {
+                var fullname = $('#fd-11-o-clock-reg-name').val();
+                var password = $('#fd-11-o-clock-reg-password').val();
+                var email = $('#fd-11-o-clock-reg-email').val();
+                var phone = $('#fd-11-o-clock-reg-phone').val();
+                var dob = $('#fd-11-o-clock-reg-dob').val();
+
+                var food_preference = $('input[name=fd-11-o-clock-reg-food-preference]:checked').val();
+
+                if(fullname != '' && password != '' && email != '' && phone != '' && dob != '') {
+                    $.post('json/profile/register.php', {
+                        _v_id: _v_id,
+                        full_name: fullname,
+                        phone: phone,
+                        password: password,
+                        dob: dob,
+                        food_preference: food_preference,
+                        email: email
+                    }, function(data) {
+                        var response = jQuery.parseJSON(data);
+                        if(response['status'] == 'failure') {
+                            if(response['msg'] == 'email already exists') {
+                                _11_o_clock_toast('email already exists', 'error', 3000);
+                            } else if(response['msg'] == 'phone already exists') {
+                                _11_o_clock_toast('phone number already exists', 'error', 3000);
+                            }
+                        } else {
+                            window.location = location.href.replace(/#.+$/g, '') + '?guid=' + guid();
+                        }
+                    });
+                } else {
+                    _11_o_clock_toast('All the fields are required', 'error', 3000);
+                }
+            }
+        }
+    }
+
+    $('body').on('click', '#fd-11-o-clock-already-account-link', function() {
+        $(this).html('I am a new user');
+        $(this).attr('id', 'fd-11-o-clock-new-user-link');
+        $('#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont:nth-child(2)').css('top', '1em');
+        $('#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont:nth-child(3) .mdl-textfield').css('left', '4%');
+        $('.fd-11-o-clock-login-inp-cont').show();
+        $('.fd-11-o-clock-reg-inp-cont').hide();
+        $('.fd-11-o-clock-login-ins-cont > p.fd-11-o-clock-login-p').html('Login');
+        $('#fd-11-o-clock-login-modal-id i').css('top', '22px');
+    });
+
+    $('body').on('click', '#fd-11-o-clock-new-user-link', function() {
+        $(this).html('i already have account');
+        $(this).attr('id', 'fd-11-o-clock-already-account-link');
+        $('#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont:nth-child(2)').css('top', '-19em');
+        $('.fd-11-o-clock-login-inp-cont').hide();
+        $('.fd-11-o-clock-reg-inp-cont').show();
+        $('#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont:nth-child(3) .mdl-textfield').css('left', '12%');
+        $('.fd-11-o-clock-login-ins-cont > p.fd-11-o-clock-login-p').html('Registration');
+        $('#fd-11-o-clock-login-modal-id i').css('top', '-39px');
+        $('.mdl-radio.is-upgraded').css('display', 'inline-block');
+    });
+        
+    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    FB LOGIN
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+    
+    var __v_id;
+
+    function guidFbLogin() {
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+          .toString(16)
+          .substring(1);
+      }
+      return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+    }
+
+    if($(window).width() > 768) {
+        var fbLoginPhoneVerificationModal = $('[data-remodal-id=fb-register-phone').remodal();
+    }
+    
+    var fpInline = new Fingerprint2().get(function(result, components) {
+        $.post('json/get-v-id.php', {
+            _ec: result,
+            resolution: components[4]['value'][0] + ' X ' + components[4]['value'][1],
+        }, function(data) {
+            __v_id = data.trim();
+        });
+    });
+
+    var fb_access_token_fb_login;
+    var user_id_fb_login;
+    var full_name_fb_login;
+    var email_fb_login;
+    var profile_pic_fb_login;
+    var gender_fb_login;
+
+    $('body').on('click', '#fd-11-o-clock-fb-connect', function() {
+        FB.login(function(response) {
+            if(response.status === 'connected') {
+                var authResponse = FB.getAuthResponse();
+                console.log(authResponse);
+                FB.api('/me?fields=id,name,gender,email,birthday,picture.width(500)', function(response) {
+                    console.log(response);
+
+                    fb_access_token_fb_login = authResponse['accessToken'];
+                    user_id_fb_login = response['id'];
+                    full_name_fb_login = response['name'];
+                    email_fb_login = response['email'];
+                    profile_pic_fb_login = response['picture']['data']['url'];
+                    gender_fb_login = response['gender'];
+
+                    $.post('json/profile/check-phone-verification.php', {
+                        user_id_fb_login: user_id_fb_login
+                    }, function(data) {
+                        if(data.trim() == 'verified') {
+                            loginModal.close();
+                            window.location.hash = "#loggedin";
+                            window.location.reload();
+                        } else {
+                            fbLoginPhoneVerificationModal.open();
+                        }
+                    });
+
+                });
+            } else if(response.status === 'not_authorized') {
+                console.log('not authorized');
+            } else {
+                console.log('not sure');
+            }
+        }, {scope: 'public_profile, email'});
+//            }, {scope: 'public_profile, email, user_birthday'});
+    });
+
+    var otpGeneratedFbLogin;
+    var phone_fb_login;
+
+    $('body').on('click', '#fd-11-o-clock-fb-login-phone-continue-btn', function() {
+        phone_fb_login = $('#fd-11-o-clock-fb-login-phone-inp').val();
+
+        $.post('json/profile/check-phone-verification.php', {phone: phone_fb_login}, function(data) {
+            if(data.trim() == 'verified') {
+                $.post('json/profile/fb-connect.php', {
+                    fb_access_token: fb_access_token_fb_login,
+                    user_id: user_id_fb_login,
+                    full_name: full_name_fb_login,
+                    email: email_fb_login,
+                    profile_pic: profile_pic_fb_login,
+                    _v_id: __v_id,
+                    phone: phone_fb_login,
+                    gender: gender_fb_login
+                }, function(data) {
+                    var response = jQuery.parseJSON(data);
+                    if(response['status'] == 'success') {
+                        setTimeout(function() {
+                            window.location = location.href.replace(/#.+$/g, '') + '?guid=' + guidFbLogin();
+                        }, 3000);
+                    } else {
+                        Materialize.toast('Some error occurred, please try again');
+                    }
+                });
+            } else {
+                otpGenerated = data.trim();
+                $('.fd-11-o-clock-fb-login-phone-verific').show();
+                $('.fd-11-o-clock-fb-login-phone-inp').hide();
+            }
+        });
+    });
+
+    $('body').on('click', '#fd-11-o-clock-fb-login-phone-save-btn', function() {
+        if(otpGenerated == $('#fd-11-o-clock-fb-login-phone-verification-inp').val().trim()) {
+            console.log(fb_access_token_fb_login + '-' + user_id_fb_login + '-' + full_name_fb_login + '-' + email_fb_login + '-' + profile_pic_fb_login + '-' + __v_id + '-' + phone_fb_login + '-' + gender_fb_login);
+            $.post('json/profile/fb-connect.php', {
+                fb_access_token: fb_access_token_fb_login,
+                user_id: user_id_fb_login,
+                full_name: full_name_fb_login,
+                email: email_fb_login,
+                profile_pic: profile_pic_fb_login,
+                _v_id: __v_id,
+                phone: phone_fb_login,
+                gender: gender_fb_login
+            }, function(data) {
+                if(response['status'] == 'success') {
+                    setTimeout(function() {
+                        window.location = location.href.replace(/#.+$/g, '') + '?guid=' + guidFbLogin();
+                    }, 3000);
+                } else {
+                    Materialize.toast('Some error occurred, please try again');
+                }
+            });
+        } else {
+            Materialize.toast('Wrong OTP has been entered, Plase try again');
+        }
+    });
+    
+    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    FORGET PASSWORD
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+    
+    $('body').on('click', '#fd-11-o-clock-forget-password-link', function() {
+        $('#fd-11-o-clock-forget-password-modal').show();
+        loginModal.close();
+    });
+    
+    var forgetPasswordOTP = '';
+    var forgetPasswordPhone = '';
+    
+    $('body').on('click', '#fd-11-o-clock-forget-password-modal button.next', function() {
+        var phone = $('#fd-11-o-clock-forget-password-modal input.phone').val();
+        
+        if(phone != '') {
+            if(phoneNoValidation(phone)) {
+                var response = '';
+                $('#fd-11-o-clock-forget-password-modal svg.circular').show();
+                $('#fd-11-o-clock-forget-password-modal button.next').hide();
+                $.post('json/profile/forget-password.php', {phone: phone, phoneCheck: 'check'}, function(data) {
+                    response = data.trim();
+                }).done(function() {
+                    if(response == 'phone does not exist') {
+                        _11_o_clock_toast('phone number entered does not exists in our database, Please register');
+                        $('#fd-11-o-clock-forget-password-modal svg.circular').hide();
+                        $('#fd-11-o-clock-forget-password-modal input.phone').show();
+                    } else {
+                        forgetPasswordOTP = response;
+                        $('#fd-11-o-clock-forget-password-modal input.phone').hide();
+                        $('#fd-11-o-clock-forget-password-modal svg.circular').hide();
+                        $('#fd-11-o-clock-forget-password-modal input#otp').show();
+                        $('#fd-11-o-clock-forget-password-modal button.change-password').show();
+                        forgetPasswordPhone = phone;
+                    }
+                });
+            } else {
+                _11_o_clock_toast('Please enter 10 digit phone number without std code', 'error', 3000);
+            }
+        } else {
+            _11_o_clock_toast('Phone number is required', 'error', 3000);
+        }
+    });
+    
+    $('body').on('click', '#fd-11-o-clock-forget-password-modal button.change-password', function() {
+        if($('#fd-11-o-clock-forget-password-modal input#otp').val() == forgetPasswordOTP) {
+            $('#fd-11-o-clock-forget-password-modal input#otp').hide();
+            $('#fd-11-o-clock-forget-password-modal input.new-password').show();
+            $('#fd-11-o-clock-forget-password-modal button.change-password').hide();
+            $('#fd-11-o-clock-forget-password-modal button.save').show();
+        } else {
+            _11_o_clock_toast('OTP entered is wrong');
+        }
+    });
+    
+    $('body').on('click', '#fd-11-o-clock-forget-password-modal button.save', function() {
+        var newPassword = $('#fd-11-o-clock-forget-password-modal input.new-password').val();
+        
+        if(newPassword != '') {
+            $('#fd-11-o-clock-forget-password-modal svg.circular').show();
+            $('#fd-11-o-clock-forget-password-modal button.save').hide();
+            $.post('json/profile/forget-password.php', {phone: forgetPasswordPhone, password: newPassword}, function(data) {
+                if(data.trim() == 'success') {
+                    _11_o_clock_toast('Password has been changed successfully', 'success', 3000);
+                    $('#fd-11-o-clock-forget-password-modal').hide();
+                } else {
+                    _11_o_clock_toast('Some server error occurred, please try again', 'error', 3000);
+                }
+            });
+        }
+    });
+    
+    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    CAROUSEL CLICK IN HOME PAGE
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+    
+    $('body').on('click', '#fd-11-o-clock-carousel-description-modal-cont i.material-icons', function() {
+        $('#fd-11-o-clock-carousel-description-modal-cont').hide();
+    });
+    
+    if(location.href.indexOf('menu.php') != -1) {
+        
+        $(".fd-11-o-clock-tabs").sticky({topSpacing:0});
+        $('.fd-11-o-clock-tabs').css('z-index', '1');
+            
+        /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        HEART ANIMATION
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+        'use strict';
+        var _strokeWidth;
+        function _classCallCheck(instance, Constructor) {
+            if (!(instance instanceof Constructor)) {
+                throw new TypeError('Cannot call a class as a function');
+            }
+        }
+        
+        function _possibleConstructorReturn(self, call) {
+            if (!self) {
+                throw new ReferenceError('this hasn\'t been initialised - super() hasn\'t been called');
+            }
+            return call && (typeof call === 'object' || typeof call === 'function') ? call : self;
+        }
+        
+        function _inherits(subClass, superClass) {
+            if (typeof superClass !== 'function' && superClass !== null) {
+                throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass);
+            }
+            subClass.prototype = Object.create(superClass && superClass.prototype, {
+                constructor: {
+                    value: subClass,
+                    enumerable: false,
+                    writable: true,
+                    configurable: true
+                }
+            });
+            if (superClass)
+                Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+        }
+
+        var Heart = function (_mojs$CustomShape) {
+            _inherits(Heart, _mojs$CustomShape);
+            function Heart() {
+                _classCallCheck(this, Heart);
+                return _possibleConstructorReturn(this, _mojs$CustomShape.apply(this, arguments));
+            }
+            Heart.prototype.getShape = function getShape() {
+                return '<path d="M73.6170213,0 C64.4680851,0 56.5957447,5.53191489 51.7021277,13.8297872 C50.8510638,15.3191489 48.9361702,15.3191489 48.0851064,13.8297872 C43.4042553,5.53191489 35.3191489,0 26.1702128,0 C11.9148936,0 0,14.0425532 0,31.2765957 C0,48.0851064 14.893617,77.8723404 47.6595745,99.3617021 C49.1489362,100.212766 50.8510638,100.212766 52.1276596,99.3617021 C83.8297872,78.5106383 99.787234,48.2978723 99.787234,31.2765957 C100,14.0425532 88.0851064,0 73.6170213,0 L73.6170213,0 Z"></path>';
+            };
+            return Heart;
+        }(mojs.CustomShape);
+        mojs.addShape('heart', Heart);
+        var CIRCLE_RADIUS = 20;
+        var RADIUS = 32;
+        
+        var circle = new mojs.Shape({
+            left: 0,
+            top: 0,
+            stroke: { '#E5214A': '#CC8EF5' },
+            strokeWidth: (_strokeWidth = {}, _strokeWidth[2 * CIRCLE_RADIUS] = 0, _strokeWidth),
+            fill: 'none',
+            scale: { 0: 1 },
+            radius: CIRCLE_RADIUS,
+            duration: 400,
+            easing: 'cubic.out'
+        });
+        
+        var burst = new mojs.Burst({
+            left: 0,
+            top: 0,
+            radius: { 4: RADIUS },
+            angle: 45,
+            count: 14,
+            timeline: { delay: 300 },
+            children: {
+                radius: 2.5,
+                fill: [
+                    { '#9EC9F5': '#9ED8C6' },
+                    { '#91D3F7': '#9AE4CF' },
+                    { '#DC93CF': '#E3D36B' },
+                    { '#CF8EEF': '#CBEB98' },
+                    { '#87E9C6': '#1FCC93' },
+                    { '#A7ECD0': '#9AE4CF' },
+                    { '#87E9C6': '#A635D9' },
+                    { '#D58EB3': '#E0B6F5' },
+                    { '#F48BA2': '#CF8EEF' },
+                    { '#91D3F7': '#A635D9' },
+                    { '#CF8EEF': '#CBEB98' },
+                    { '#87E9C6': '#A635D9' }
+                ],
+                scale: {
+                    1: 0,
+                    easing: 'quad.in'
+                },
+                pathScale: [
+                    0.8,
+                    null
+                ],
+                degreeShift: [
+                    13,
+                    null
+                ],
+                duration: [
+                    500,
+                    700
+                ],
+                easing: 'quint.out'
+            }
+        });
+        
+        var heart = new mojs.Shape({
+            left: 0,
+            top: 2,
+            shape: 'heart',
+            fill: '#ff0050',
+            scale: { 0: 1 },
+            easing: 'elastic.out',
+            duration: 1000,
+            delay: 300,
+            radius: 13
+        });
+        
+        $('body').on('click', '#fd-11-o-clock-dishes-card-cont i.heart', function() {
+            var  $this = $(this);
+            if(!$(this).hasClass('loved')) {
+                $('div[data-name="mojs-shape"]').show();
+                heartAnimationAudio.play();
+                var offsets = $(this).offset();
+                var top = offsets.top;
+                var left = offsets.left;
+
+                var coords = {
+                    x: left + 15,
+                    y: top + 11
+                };
+                burst.tune(coords).replay();
+                circle.tune(coords).replay();
+                heart.tune(coords).replay();
+
+                $(this).css('color', '#ff0050');
+                $(this).addClass('loved');
+
+                setTimeout(function() {
+                    $('div[data-name="mojs-shape"]').hide();
+                }, 700);
+
+                console.log(_u_id);
+                console.log(_v_id);
+                
+                if(_u_id != '' && _u_id != undefined) {
+                    $.post('json/menu/love-dish.php', {
+                        dish_id: $this.next().next('.fd-11-o-clock-dish-card-title').attr('id'),
+                        _u_id: _u_id,
+                        action: 'love'
+                    }, function(data) {
+                        if(data.trim() != 'success') {
+                            _11_o_clock_toast('some server error occurred, please try again', 'error', 3000);
+                            $(this).css('color', '#dfdfdf');
+                        }
+                    });
+                } else if(_v_id != '' && _v_id != undefined) {
+                    $.post('json/menu/love-dish.php', {
+                        dish_id: $this.next().next('.fd-11-o-clock-dish-card-title').attr('id'),
+                        _v_id: _v_id,
+                        action: 'love'
+                    }, function(data) {
+                        if(data.trim() != 'success') {
+                            _11_o_clock_toast('some server error occurred, please try again', 'error', 3000);
+                            $(this).css('color', '#dfdfdf');
+                        }
+                    });
+                }
+            } else {
+                $(this).css('color', '#dfdfdf');
+                if(_u_id != '') {
+                    $.post('json/menu/love-dish.php', {
+                        dish_id: $this.next().next('.fd-11-o-clock-dish-card-title').attr('id'),
+                        _u_id: _u_id,
+                        action: 'hate'
+                    }, function(data) {
+                        if(data.trim() != 'success') {
+                            _11_o_clock_toast('some server error occurred, please try again', 'error', 3000);
+                            $(this).css('color', '#ff0050');
+                        }
+                    });
+                } else if(_v_id != '') {
+                    $.post('json/menu/love-dish.php', {
+                        dish_id: $this.next().next('.fd-11-o-clock-dish-card-title').attr('id'),
+                        _v_id: _v_id,
+                        action: 'hate'
+                    }, function(data) {
+                        if(data.trim() != 'success') {
+                            _11_o_clock_toast('some server error occurred, please try again', 'error', 3000);
+                            $(this).css('color', '#ff0050');
+                        }
+                    });
+                }
+            }
+        });
+        
+        /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        GET THE MENU
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+        var menuForSearching = []; // data structure for menu used while dishes searching
+        var menuForSearchingIndex = 0;
+        var itemsInCart = [];
+        var addOnsOfItemsInCart = {};
+        
+        var fp = new Fingerprint2().get(function(result, components) {
+            $.post('json/get-v-id.php', {
+                _ec: result,
+                resolution: components[4]['value'][0] + ' X ' + components[4]['value'][1],
+            }, function(data) {
+                _v_id = data.trim();
+            }).done(function() {
+                $.get('/11oclock/json/menu/get-menu.php', {menu: 'menu', _v_id: _v_id}, function(data) {
+                    var response = jQuery.parseJSON(data);
+                    var tabbedHeadersInnerHtml = '';
+                    var tabbedBodyInnerHtml = '';
+                    var subCategoryInnerHtml = '';
+
+                    for(var i = 0; i < response['menu'].length; i++) {
+                        if(i == 0) {
+                            tabbedHeadersInnerHtml += '<li class="tab col tabs-header-selected"><a href="' + response['menu'][i]['menu_category'].toLowerCase().replace(/\s/g, '-') + '">' + response['menu'][i]['menu_category'].toUpperCase() + '</a></li>';
+                        } else {
+                            tabbedHeadersInnerHtml += '<li class="tab col tabs-header-deselected"><a href="' + response['menu'][i]['menu_category'].toLowerCase().replace(/\s/g, '-') + '">' + response['menu'][i]['menu_category'].toUpperCase() + '</a></li>';
+                        }
+
+                        for(var j = 0; j < response['menu'][i]['menu_sub_category'].length; j++) {
+
+                            if(i == 0) {
+                                subCategoryInnerHtml += '<div class="row fd-11-o-clock-menu-sub-categ ' + response['menu'][i]['menu_category'].toLowerCase().replace(/\s/g, '-') + '" value="' + response['menu'][i]['menu_category'].toLowerCase().replace(/\s/g, '-') + '-' + response['menu'][i]['menu_sub_category'][j]['name'].toLowerCase().replace(/\s/g, '-') + '" id="fd-11-o-clock-menu-sub-categ"><img src="/11oclock/images/icons/' + response['menu'][i]['menu_sub_category'][j]['image'] + '" /><p>' + response['menu'][i]['menu_sub_category'][j]['name'] + '</p><i class="material-icons">arrow_drop_down</i></div>';
+                            } else {
+                                subCategoryInnerHtml += '<div style="display:none;" class="row fd-11-o-clock-menu-sub-categ ' + response['menu'][i]['menu_category'].toLowerCase().replace(/\s/g, '-') + '" value="' + response['menu'][i]['menu_category'].toLowerCase().replace(/\s/g, '-') + '-' + response['menu'][i]['menu_sub_category'][j]['name'].toLowerCase().replace(/\s/g, '-') + '" id="fd-11-o-clock-menu-sub-categ"><img src="/11oclock/images/icons/' + response['menu'][i]['menu_sub_category'][j]['image'] + '" /><p>' + response['menu'][i]['menu_sub_category'][j]['name'] + '</p><i class="material-icons">arrow_drop_down</i></div>';
+                            }
+
+                            for(var k = 0; k < response['menu'][i]['menu_sub_category'][j]['items'].length; k++) {
+
+                                if(response['menu'][i]['menu_sub_category'][j]['items'][k]['type'] == 'veg') {
+                                    tabbedBodyInnerHtml += '<div style="display:none;" id="fd-11-o-clock-dishes-card-cont" class="fd-11-o-clock-dishes-card-cont veg ' + response['menu'][i]['menu_category'].toLowerCase().replace(/\s/g, '-') + '-' + response['menu'][i]['menu_sub_category'][j]['name'].toLowerCase().replace(/\s/g, '-') + ' ' + response['menu'][i]['menu_category'].toLowerCase().replace(/\s/g, '-') + '">';
+                                } else if(response['menu'][i]['menu_sub_category'][j]['items'][k]['type'] == 'nonveg') {
+                                    tabbedBodyInnerHtml += '<div style="display:none;" id="fd-11-o-clock-dishes-card-cont" class="fd-11-o-clock-dishes-card-cont non-veg ' + response['menu'][i]['menu_category'].toLowerCase().replace(/\s/g, '-') + '-' + response['menu'][i]['menu_sub_category'][j]['name'].toLowerCase().replace(/\s/g, '-') + ' ' + response['menu'][i]['menu_category'].toLowerCase().replace(/\s/g, '-') + '">';
+                                }
+
+                                tabbedBodyInnerHtml += '<img src="/11oclock/images/dishes-image/' + response['menu'][i]['menu_sub_category'][j]['items'][k]['image'] + '" alt=""><i class="heart fa fa-heart"';
+                                
+                                if(response['menu'][i]['menu_sub_category'][j]['items'][k]['love']) {
+                                    tabbedBodyInnerHtml += ' style="color: #ff0050;" class="loved"';
+                                }
+                                
+                                tabbedBodyInnerHtml += '></i><i class="loves-quant" style="display:none;">5K</i><p id="' + response['menu'][i]['menu_sub_category'][j]['items'][k]['id'] + '" class="fd-11-o-clock-dish-card-title">' + response['menu'][i]['menu_sub_category'][j]['items'][k]['name'] + '</p><p class="fd-11-o-clock-dish-card-rate">Rs <i>' + response['menu'][i]['menu_sub_category'][j]['items'][k]['rate'] + '</i></p>';
+
+                                if(response['menu'][i]['menu_sub_category'][j]['items'][k]['type'] == 'veg') {
+                                    tabbedBodyInnerHtml += '<img class="fd-11-o-clock-dish-card-dish-type" src="/11oclock/images/icons/veg-dish-icon.png" alt="Foodinger Veg Dish">';
+                                } else if(response['menu'][i]['menu_sub_category'][j]['items'][k]['type'] == 'nonveg') {
+                                    tabbedBodyInnerHtml += '<img class="fd-11-o-clock-dish-card-dish-type" src="/11oclock/images/icons/non-veg-dish-icon.png" alt="Foodinger Veg Dish">';
+                                }
+
+                                if(response['menu'][i]['menu_sub_category'][j]['items'][k]['add_ons'] != undefined) {
+                                    for (var l = 0; l < response['menu'][i]['menu_sub_category'][j]['items'][k]['add_ons'].length; l++) {
+                                        tabbedBodyInnerHtml += '<p style="display: none;" class="fd-11-o-clock-menu-items-add-ons" value="' + response['menu'][i]['menu_sub_category'][j]['items'][k]['add_ons'][l]['id'] + '"><span class="name">' + response['menu'][i]['menu_sub_category'][j]['items'][k]['add_ons'][l]['name'] + '</span><span class="rate">' + response['menu'][i]['menu_sub_category'][j]['items'][k]['add_ons'][l]['rate'] + '</span><span class="categ">' + response['menu'][i]['menu_sub_category'][j]['items'][k]['add_ons'][l]['categ'] + '</span><span class="title">' + response['menu'][i]['menu_sub_category'][j]['items'][k]['add_ons'][l]['title'] + '</span></p>';
+                                    }
+                                }
+                                
+                                if(opened_flag_array['flag'] == 'false') {
+                                    tabbedBodyInnerHtml += '<p class="closed_time">' + 'Next opens @ ' + opened_flag_array['next_opening_hour'] + '</p>';
+                                } else {
+                                    tabbedBodyInnerHtml += '<p class="fd-11-o-clock-dish-card-plus-minus-cont"><img class="fd-11-o-clock-add-btn" src="/11oclock/images/icons/plus-icon.png" alt="Add Item"><i>0</i><img class="fd-11-o-clock-remove-btn" src="/11oclock/images/icons/minus-icon.png" alt="Remove Item"></p>';
+                                }
+
+                                tabbedBodyInnerHtml += '</div>';
+
+                            }
+
+                        }
+                        tabbedBodyInnerHtml += '</div>';
+                        menuForSearchingIndex++;
+                    }    
+
+                    $('body').css('background', '#bebdbd');
+                    $('#fd-11-o-clock-dishes-inner-cont').append(tabbedBodyInnerHtml);
+                    $('.fd-11-o-clock-tabs').html(tabbedHeadersInnerHtml);
+                    $('#fd-11-o-clock-dishes-sub-category-cont').append(subCategoryInnerHtml);
+                    $('ul.fd-11-o-clock-tabs').tabs();
+
+                    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    OPEN THE MENU CATEG BASED ON HOME PAGE CLICK
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+                    if(location.href.indexOf('#') != -1) {   
+                        var menuCategRedirect = location.href.replace(/.+cat=/i, '').replace(/#.*$/, '');
+                    } else if(location.href.indexOf('http://foodinger.in/11oclock/menu.php?cat=') != -1) {
+                        var menuCategRedirect = location.href.replace(/.+cat=/i, '');
+                    }
+                    
+                    $('.fd-11-o-clock-menu-sub-categ').hide();
+                    $('.fd-11-o-clock-menu-sub-categ' + '.' + menuCategRedirect).show();
+                    $('.fd-11-o-clock-dishes-cont ul li').removeClass('tabs-header-selected');
+                    $('.fd-11-o-clock-dishes-cont ul li').addClass('tabs-header-deselected');
+                    $('a[href="' + menuCategRedirect + '"]').parent().addClass('tabs-header-selected');
+                    $('a[href="' + menuCategRedirect + '"]').parent().removeClass('tabs-header-deselected');
+
+                    $.get('json/order/get-items.php', {
+                        cart_items: 'cart_items',
+                        guid: guid()
+                    }, function(data) {
+                        if(data.trim() != '') {
+                            var response = jQuery.parseJSON(data);
+                            $.each(response['items'], function(index) {
+                                itemsInCart[response['items'][index]['id']] = response['items'][index]['quantity'];
+                                $('#' + response['items'][index]['id']).siblings('.fd-11-o-clock-dish-card-plus-minus-cont').children('i').text(response['items'][index]['quantity']);
+                                
+                                var addOnsIndex1 = 0;
+                                $.each(response['items'][index]['add_ons'], function(index2) {
+                                    var addOnsIndex2 = 0;
+                                    $.each(response['items'][index]['add_ons'][index2], function(index3) {
+                                        addOnsOfItemsInCart[response['items'][index]['id']][addOnsIndex1][addOnsIndex2] = response['items'][index]['']
+                                    });
+                                });
+                            });
+                        }
+                    });
+            });
+            });
+        });
+        
+        var selectedMenuSubMenu = '';
+        $('body').on('click', 'ul.fd-11-o-clock-tabs li', function() {
+            $('ul.fd-11-o-clock-tabs li').removeClass('tabs-header-selected');
+            $('ul.fd-11-o-clock-tabs li').addClass('tabs-header-deselected');
+            $(this).addClass('tabs-header-selected');
+            $(this).removeClass('tabs-header-deselected');
+            
+            var id = $(this).children('a').attr('href');
+            $('.fd-11-o-clock-dishes-card-cont').hide();
+            $('.fd-11-o-clock-menu-sub-categ').hide();
+            $('#fd-11-o-clock-dishes-sub-category-cont > .' + id).show();
+            $('#fd-11-o-clock-dishes-inner-cont #initial-msg').show();
+            selectedMenuSubMenu = '';
+        });
+        
+        $('body').on('click', '.fd-11-o-clock-menu-sub-categ', function() {
+            $('#fd-11-o-clock-dishes-inner-cont #initial-msg').hide();
+            $('.fd-11-o-clock-dishes-card-cont').hide();
+            $('.' + $(this).attr('value')).show();
+            selectedMenuSubMenu = $(this).attr('value');
+        });
+        
+        $('#fd-11-o-clock-dishes-inner-cont #veg-non-veg-filter p').click(function() {
+            if(selectedMenuSubMenu != '') {
+                if($(this).attr('value') != 'clear') {
+                    $('#fd-11-o-clock-dishes-inner-cont p.clear').show();
+                    $('.fd-11-o-clock-dishes-card-cont').hide();
+                    $('.' + selectedMenuSubMenu + '.' + $(this).attr('value')).show();
+                    $('#fd-11-o-clock-dishes-inner-cont #veg-non-veg-filter p').css('background-color', 'transparent');
+                    $(this).css('background-color', '#fff');
+                    $('#fd-11-o-clock-dishes-inner-cont p.clear').css('background-color', '#fff');
+                } else {
+                    $(this).hide();
+                    $('.' + selectedMenuSubMenu).show();
+                }
+            } else {
+                Materialize.toast('Please select the type from left menu first', 3000);
+            }
+        });
+        
+        /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ADD AND REMOVE CART ITEM
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+        var addOnsRadioGroupIndex = 0;
+        var itemId = '';
+        var curItemQty = '';
+        $('body').on('click', '.fd-11-o-clock-add-btn', function() {
+            var $this = $(this);
+            var addOnsDialogInnerHtml = '';
+            if($this.parent().prev().hasClass('fd-11-o-clock-menu-items-add-ons')) {
+                var addOnsIndex = 0;
+                addOnsRadioGroupIndex = 0;
+                addOnsDialogInnerHtml += '<p class="title">Choose Your Preference</p><hr>';
+                var totalAddons = $this.parent().parent().children('.fd-11-o-clock-menu-items-add-ons').size()
+                $this.parent().parent().children('.fd-11-o-clock-menu-items-add-ons').each(function() {
+                    var categ = $(this).children('.categ').text().trim();
+                    if(addOnsIndex == 0) {
+                        addOnsRadioGroupIndex++;
+                        addOnsDialogInnerHtml += '<p class="add-ons-title">' + $(this).children('.title').text().trim() + '</p><div><p><input class="add-ons-radio" name="group' + addOnsRadioGroupIndex + '" type="radio" id="' + $(this).children('.name').text().trim() + '" value="' + $(this).attr('value') + '"/><label for="' + $(this).children('.name').text().trim() + '">' + $(this).children('.name').text().trim() + ' &nbsp;<span>+ Rs ' + $(this).children('.rate').text().trim() + '</span></label></p>';
+                    } else if(addOnsIndex == totalAddons-1) {
+                        addOnsDialogInnerHtml += '<p><input class="add-ons-radio" name="group' + addOnsRadioGroupIndex + '" type="radio" id="' + $(this).children('.name').text().trim() + '" value="' + $(this).attr('value') + '"/><label for="' + $(this).children('.name').text().trim() + '">' + $(this).children('.name').text().trim() + ' &nbsp;<span>+ Rs ' + $(this).children('.rate').text().trim() + '</span></label></p></div>';
+                    } else if(categ != $(this).next().children('.categ').text().trim()) {
+                        addOnsDialogInnerHtml += '<p><input class="add-ons-radio" name="group' + addOnsRadioGroupIndex + '" type="radio" id="' + $(this).children('.name').text().trim() + '" value="' + $(this).attr('value') + '"/><label for="' + $(this).children('.name').text().trim() + '">' + $(this).children('.name').text().trim() + ' &nbsp;<span>+ Rs ' + $(this).children('.rate').text().trim() + '</span></label></p></div><p class="add-ons-title">' + $(this).next().children('.title').text().trim() + '<p><div>';
+                        addOnsRadioGroupIndex++;
+                    } else {
+                        addOnsDialogInnerHtml += '<p><input class="add-ons-radio" name="group' + addOnsRadioGroupIndex + '" type="radio" id="' + $(this).children('.name').text().trim() + '" value="' + $(this).attr('value') + '"/><label for="' + $(this).children('.name').text().trim() + '">' + $(this).children('.name').text().trim() + ' &nbsp;<span>+ Rs ' + $(this).children('.rate').text().trim() + '</span></label></p>';
+                    }
+
+                    addOnsIndex++;
+                });
+                addOnsDialogInnerHtml += '<button>Select</button>';
+
+                $('#fd-11-o-clock-mobile-add-on-modal > div').html(addOnsDialogInnerHtml);
+                $('#fd-11-o-clock-mobile-add-on-modal').show();
+            }
+
+            itemId = $this.parent().siblings('.fd-11-o-clock-dish-card-title').attr('id');
+            var itemQty = parseInt($this.siblings('i').text());
+            itemQty++;
+
+            itemsInCart[itemId] = itemQty;
+            $(this).siblings('i').text(itemQty);
+            
+            console.log(addOnsOfItemsInCart);
+
+        });
+
+        $('body').on('click', '.fd-11-o-clock-remove-btn', function() {
+            var $this = $(this);
+
+            itemId = $this.parent().siblings('.fd-11-o-clock-dish-card-title').attr('id');
+            var itemQty = parseInt($this.siblings('i').text());
+
+            var addOnsListStringArray = [];
+            var addOnsListStringArrayIndex = 0;
+
+            var removeAddOnsInnerHtml = '';
+            if(itemQty > 0) {
+                itemQty--;
+                itemsInCart[itemId] = itemQty;
+                $(this).siblings('i').text(itemQty);
+
+                if(itemQty == 0) {
+                    delete itemsInCart[itemId]
+                }
+
+                if($this.parent().prev().hasClass('fd-11-o-clock-menu-items-add-ons')) {
+
+                    removeAddOnsInnerHtml += '<p class="title">Select which item you want to remove</p><hr>';
+                    for(var key in addOnsOfItemsInCart) {
+
+                        for(var i = 0; i < addOnsOfItemsInCart[key].length; i++) {
+                            for(var j = 0; j < addOnsOfItemsInCart[key][i].length; j++) {
+                                if(j == 0) {
+                                    addOnsListStringArray[i] = addOnsOfItemsInCart[key][i][j] + ' ';
+                                } else {
+                                    addOnsListStringArray[i] += addOnsOfItemsInCart[key][i][j] + ' ';
+                                }
+                            }
+                        }
+                    }
+
+                    for(var i = 0; i < addOnsListStringArray.length; i++) {
+                        var tempArr = addOnsListStringArray[i].split(' ');
+                        removeAddOnsInnerHtml += '<div><p><i>';
+                        for(var j = 0; j < tempArr.length - 1; j++) {
+                            removeAddOnsInnerHtml += '<span id="add-on" class="' + tempArr[j] + '">' + $('.fd-11-o-clock-dishes-card-cont').children('p[value="' + tempArr[j] + '"]').children('.name').text();
+                            if(j != tempArr.length - 2) {
+                                removeAddOnsInnerHtml += '</span>, ';
+                            } else {
+                                removeAddOnsInnerHtml += '</span>';
+                            }
+                        }
+                        removeAddOnsInnerHtml += '</i><span class="quantity" style="float: right;">1</span> </p><button>Remove</button></div>';
+                    }
+                    $('#fd-11-o-clock-mobile-remove-items-addons-modal > div').html(removeAddOnsInnerHtml);
+
+                    var remAddOnSize = $('#fd-11-o-clock-mobile-remove-items-addons-modal > div > div').size();
+                    for(var i = 0; i < remAddOnSize; i++) {
+                        for(var j = i+1; j < remAddOnSize; ) {
+
+                            if($('#fd-11-o-clock-mobile-remove-items-addons-modal > div > div:nth-child(' + (i+3) + ')').children('p').html() != undefined || $('#fd-11-o-clock-mobile-remove-items-addons-modal > div > div:nth-child(' + (j+3) + ')').children('p').html() != undefined) {
+                                if($('#fd-11-o-clock-mobile-remove-items-addons-modal > div > div:nth-child(' + (i+3) + ')').children('p').children('i').html() == $('#fd-11-o-clock-mobile-remove-items-addons-modal > div > div:nth-child(' + (j+3) + ')').children('p').children('i').html()) {
+                                    $('#fd-11-o-clock-mobile-remove-items-addons-modal > div > div:nth-child(' + (j+3) + ')').remove();
+                                    $('#fd-11-o-clock-mobile-remove-items-addons-modal > div > div:nth-child(' + (i+3) + ')').children('p').children('span.quantity').text(parseInt($('#fd-11-o-clock-mobile-remove-items-addons-modal > div > div:nth-child(' + (i+3) + ')').children('p').children('span.quantity').text()) + 1);
+                                } else {
+                                    j++;
+                                }
+                            } else {
+                                j++;
+                            }
+                        }
+                    }
+
+                    $('#fd-11-o-clock-mobile-remove-items-addons-modal').show();
+                }
+            }
+        });
+
+        $('body').on('click', '#fd-11-o-clock-mobile-add-on-modal button', function() {
+            var j = 0;
+            for(var i = 1; i <= addOnsRadioGroupIndex; i++) {
+                if(addOnsOfItemsInCart[itemId] == undefined) {
+                    addOnsOfItemsInCart[itemId] = [];
+                }
+
+                if(addOnsOfItemsInCart[itemId][parseInt(itemsInCart[itemId]) - 1] == undefined) {
+                    addOnsOfItemsInCart[itemId][parseInt(itemsInCart[itemId]) - 1] = [];
+                }
+
+                if(addOnsOfItemsInCart[itemId][parseInt(itemsInCart[itemId]) - 1][j] == undefined) {
+                    addOnsOfItemsInCart[itemId][parseInt(itemsInCart[itemId]) - 1][j] = [];
+                }
+
+                if($('input[name="group' + i + '"]:checked').attr('value') != undefined) {
+                    addOnsOfItemsInCart[itemId][parseInt(itemsInCart[itemId]) - 1][j] = $('input[name="group' + i + '"]:checked').attr('value');
+                    j++;
+                }
+            }
+            $('#fd-11-o-clock-mobile-add-on-modal').hide();
+        });
+    
+        $('body').on('click', '#fd-11-o-clock-mobile-remove-items-addons-modal button', function() {
+            $(this).parent().remove();
+            delete addOnsOfItemsInCart[itemId];
+
+            var i = 0;
+            var j = 0;
+            $('#fd-11-o-clock-mobile-remove-items-addons-modal > div > div').each(function() {
+
+                if(parseInt($(this).children().children('.quantity').text()) > 1) {
+                    for(; i < parseInt($(this).children().children('.quantity').text()); i++) {
+                        j = 0;
+                        $(this).children().children('i').children('span#add-on').each(function() {
+
+                            if(addOnsOfItemsInCart[itemId] == undefined) {
+                                addOnsOfItemsInCart[itemId] = [];
+                            }
+
+                            if(addOnsOfItemsInCart[itemId][i] == undefined) {
+                                addOnsOfItemsInCart[itemId][i] = [];
+                            }
+
+                            addOnsOfItemsInCart[itemId][i][j] = $(this).attr('class');
+                            j++;
+
+                        });
+                    }
+                } else {
+                    $(this).children().children('i').children('span#add-on').each(function() {
+                        if(addOnsOfItemsInCart[itemId] == undefined) {
+                            addOnsOfItemsInCart[itemId] = [];
+                        }
+
+                        if(addOnsOfItemsInCart[itemId][i] == undefined) {
+                            addOnsOfItemsInCart[itemId][i] = [];
+                        }
+
+                        addOnsOfItemsInCart[itemId][i][j] = $(this).attr('class');
+                        j++;
+
+                    });
+                }
+                i++;
+
+            });
+
+            $('#fd-11-o-clock-mobile-remove-items-addons-modal').hide();
+        });
+
+        $('#fd-11-o-clock-menu-checkout-btn').click(function() {
+            var termsModal = $('[data-remodal-id=fd-11-o-clock-menu-checkout-terms-dialog').remodal();
+            termsModal.open();
+        });
+        
+        $('body').on('click', '#fd-11-o-clock-redirect-to-basket-btn', function() {
+            if($('#fd-11-o-clock-order-terms-accept-checkbox').is(':checked')) {
+                var itemsInCartString = '';
+                for(var items in itemsInCart)  {
+                    itemsInCartString += items + '-s-' + itemsInCart[items] + '-foodinger-';
+                }
+
+                var addOnsOfItemsInCartString = '';
+                for(var key in addOnsOfItemsInCart) {
+                    for(var i = 0; i < addOnsOfItemsInCart[key].length; i++) {
+                        for(var j = 0; j < addOnsOfItemsInCart[key][i].length; j++) {
+                            addOnsOfItemsInCartString += addOnsOfItemsInCart[key][i][j] + '-s-';
+                        }
+                        addOnsOfItemsInCartString += '-i-';
+                    }
+                    addOnsOfItemsInCartString += '-items-';
+                }   
+
+                $.get('/11oclock/json/order/save-items.php',  {
+                    uid: guid(),
+                    items: itemsInCartString,
+                    addOns: addOnsOfItemsInCartString
+                }, function(data) {
+                    if(data.trim() == 'success') {
+                        window.location = 'http://foodinger.in/11oclock/basket.php?uid='+guid();
+                    }
+                });
+            } else {
+                Materialize.toast('Please agree with terms and conditions to proceed to basket', 5000);
+            }
+        });
+        
+        /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        DISHES SEARCH EVENT
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+        
+        $('body').on('input', '#fd-11-o-clock-dish-search-inp', function() {
+            var searchedItemName = $(this).val();
+            if(searchedItemName != '') {
+                $('.fd-11-o-clock-dishes-card-cont').show();
+                $('.fd-11-o-clock-menu-sub-categ').hide();
+                $('#fd-11-o-clock-dishes-sub-category-cont p').hide();
+                $('.fd-11-o-clock-tabs > li').hide();
+                $('#fd-11-o-clock-dishes-inner-cont #initial-msg').hide();
+                var searchReg = new RegExp(searchedItemName.toLowerCase());
+                
+                $('.fd-11-o-clock-dishes-card-cont').each(function() {
+                    
+                    if(!searchReg.test($(this).children('.fd-11-o-clock-dish-card-title').text().toLowerCase())) {
+                        $(this).hide();
+                    }
+                    
+                });
+                
+            } else {
+                $('.fd-11-o-clock-dishes-card-cont').hide();
+                $('.fd-11-o-clock-tabs > li').show();
+                $('#fd-11-o-clock-dishes-inner-cont #initial-msg').show();
+                $('#fd-11-o-clock-dishes-sub-category-cont p').show();
+            }
+        });
+    }
+    
+    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    GET ITEMS IN CART
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+    
+    if(location.href.indexOf('basket.php') != -1 && location.href.indexOf('profile.php') == -1) {
+        var cartItemsInnerHtml = '';
+        var subTotal = 0;
+        var deliveryCharge = 0;
+        var itemsInCart = [];
+        var maxDiscountAmount = 0;
+        var minAmountForDiscount = 0;
+        var discountDisc = 0;
+        var discountAmnt = 0;
+        
+        var addOnsInCartitems = [];
+        var savedAddressesBasket = 0;
+        var savedAddressModalInnerHtml = '';
+        
+        $.get('json/order/get-items.php', {
+            cart_items: 'cart_items',
+            guid: guid()
+        }, function(data) {
+            if(data.trim() != '') {
+                var response = jQuery.parseJSON(data);
+                $.each(response['items'], function(index) {
+                    
+                    if(response['items'][index]['add_ons'] != undefined) {
+                        
+                        var addOnsSize = response['items'][index]['add_ons'].length;
+                        var quantity = 0;
+                        if(addOnsSize == response['items'][index]['quantity']) {
+                            quantity = 1;
+                        }
+                        
+                        for(var i = 0; i < response['items'][index]['add_ons'].length; i++) {
+                            
+                            if(response['items'][index]['name'] != null) {
+                                cartItemsInnerHtml += '<div class="fd-11-o-clock-menu-item" id="' + response['items'][index]['id'] + '"><i class="material-icons" id="fd-11-o-clock-remove-btn">close</i><p class="items" style="width: 37%; margin-left: -4%; line-height: 1.2">' + response['items'][index]['name'] + '<br/>';
+
+                                var rate = parseInt(response['items'][index]['rate']);
+
+                                for(var j = 0; j < response['items'][index]['add_ons'][i].length; j++) {
+                                    cartItemsInnerHtml += '<span value="' + response['items'][index]['add_ons'][i][j]['id'] + '" style="font-size: 10px; text-transform: lowercase; color: rgba(255, 0, 50, 0.6)">' + response['items'][index]['add_ons'][i][j]['name'] + '</span>';
+                                    if(j != response['items'][index]['add_ons'][i].length-1) {
+                                        cartItemsInnerHtml += ', ';
+                                    }
+                                    rate += parseInt(response['items'][index]['add_ons'][i][j]['rate']);
+                                    subTotal += parseInt(response['items'][index]['add_ons'][i][j]['rate']);
+                                    
+                                    // no need - just for matching
+                                    if(addOnsInCartitems[response['items'][index]['id']] == undefined) {
+                                        addOnsInCartitems[response['items'][index]['id']] = [];
+                                    }
+
+                                    if(addOnsInCartitems[response['items'][index]['id']][i] == undefined) {
+                                        addOnsInCartitems[response['items'][index]['id']][i] = [];
+                                    }
+
+                                    if(addOnsInCartitems[response['items'][index]['id']][i][j] == undefined) {
+                                        addOnsInCartitems[response['items'][index]['id']][i][j] = [];
+                                    }
+
+                                    addOnsInCartitems[response['items'][index]['id']][i][j] = response['items'][index]['add_ons'][i][j]['id'];
+                                }
+
+                                cartItemsInnerHtml += '</p><p class="quantity">' + quantity + '</p><p class="amount" style="width: 25%;">Rs <span>' + rate + '</span></p>';
+                                
+                                if(opened_flag_array['flag'] == 'false') {
+                                    cartItemsInnerHtml += '<p class="closed_time">' + 'Next opens @ ' + opened_flag_array['next_opening_hour'] + '</p>';
+                                } else {
+                                    cartItemsInnerHtml += '<p style="width: 20%; display: inline-block;"><img id="fd-11-o-clock-basket-add-btn" src="/11oclock/images/icons/plus-icon.png" /><img id="fd-11-o-clock-basket-remove-btn" src="/11oclock/images/icons/minus-icon.png" /></p>';
+                                }
+                                
+                                cartItemsInnerHtml += '</div>';
+                            }
+                        }
+                        
+                    } else {
+                        if(response['items'][index]['id'] != "undefined") {
+                            cartItemsInnerHtml += '<div class="fd-11-o-clock-menu-item" id="' + response['items'][index]['id'] + '"><i class="material-icons" id="fd-11-o-clock-remove-btn">close</i><p class="items" style="width: 37%; margin-left: -4%;">' + response['items'][index]['name'] + '</p><p class="quantity">' + response['items'][index]['quantity'] + '</p><p style="width: 25%;" class="amount">Rs <span>' + (parseInt(response['items'][index]['rate']) * parseInt(response['items'][index]['quantity'])) + '</span></p>';
+                            
+                            if(opened_flag_array['flag'] == 'false') {
+                                cartItemsInnerHtml += '<p class="closed_time">' + 'Next opens @ ' + opened_flag_array['next_opening_hour'] + '</p>';
+                            } else {
+                                cartItemsInnerHtml += '<p style="width: 20%; display: inline-block;"><img id="fd-11-o-clock-basket-add-btn" src="/11oclock/images/icons/plus-icon.png" /><img id="fd-11-o-clock-basket-remove-btn" src="/11oclock/images/icons/minus-icon.png" /></p>';
+                            }
+                            cartItemsInnerHtml += '</div>';
+                        }
+                    }
+
+                    if(response['items'][index]['rate'] != null) {
+                        itemsInCart[response['items'][index]['id']] = response['items'][index]['quantity'];
+                        subTotal += parseInt(response['items'][index]['rate']) * parseInt(response['items'][index]['quantity']);
+                    }
+                });
+                
+                if(response['saved_address']) {
+                    $.each(response['saved_address'], function(index) {
+                        savedAddressesBasket++;
+                        savedAddressModalInnerHtml += '<div class="saved-address-card"><p class="name">' + response['saved_address'][index]['name'] + '</p><p class="phone">' + response['saved_address'][index]['phone'] + '</p><p class="address">' + response['saved_address'][index]['address'] + '</p><p class="landmark">' + response['saved_address'][index]['landmark'] + '</p><p class="area">' + response['saved_address'][index]['area'] + '</p><p class="latitude" style="display:none;">' + response['saved_address'][index]['latitude'] + '</p><p class="longitude" style="display:none;">' + response['saved_address'][index]['longitude'] + '</p></div>';
+                    });
+                }
+                
+            }
+        }).done(function() {
+            if(itemsInCart.length != 0) {
+                
+                if(savedAddressesBasket) {
+                    $('#fd-11-o-clock-basket-saved-addresses-modal > div').append(savedAddressModalInnerHtml);
+                    $('#fd-11-o-clock-basket-saved-addresses-modal').show();
+                }
+                
+                $('#fd-11-o-clock-empty-cart-cont').hide();
+                
+                if(subTotal < MINIMUM_AMOUNT) {
+                    deliveryCharge = 30;
+                }
+                $('#please-wait').hide();
+                $('.fd-11-o-clock-basket-items-cont').prepend(cartItemsInnerHtml);
+                
+                var itemsInCartSize = $('.fd-11-o-clock-menu-item').size();
+                for(var i = 0; i < itemsInCartSize; i++) {
+                    for(var j = i+1; j < itemsInCartSize; ) {
+                        
+                        if($('.fd-11-o-clock-basket-items-cont > div:nth-child(' + (i) + ')').children('p.items').html() != undefined || $('.fd-11-o-clock-basket-items-cont > div:nth-child(' + (j) + ')').children('p.items').html() != undefined) {
+                            if($('.fd-11-o-clock-basket-items-cont > div:nth-child(' + (i) + ')').children('p.items').html() == $('.fd-11-o-clock-basket-items-cont > div:nth-child(' + (j) + ')').children('p.items').html()) {
+                                
+                                $('.fd-11-o-clock-basket-items-cont > div:nth-child(' + (j) + ')').remove();
+                                
+                                $('.fd-11-o-clock-basket-items-cont > div:nth-child(' + (i) + ')').children('p.amount').children('span').text(parseInt($('.fd-11-o-clock-basket-items-cont > div:nth-child(' + (i) + ')').children('p.amount').children('span').text()) + (parseInt($('.fd-11-o-clock-basket-items-cont > div:nth-child(' + (i) + ')').children('p.amount').children('span').text()) / (parseInt($('.fd-11-o-clock-basket-items-cont > div:nth-child(' + (i) + ')').children('p.quantity').text()))));
+                                
+                                $('.fd-11-o-clock-basket-items-cont > div:nth-child(' + (i) + ')').children('p.quantity').text(parseInt($('.fd-11-o-clock-basket-items-cont > div:nth-child(' + (i) + ')').children('p.quantity').text()) + 1);
+                            } else {
+                                j++;
+                            }
+                        } else {
+                            j++;
+                        }
+                    }
+                }
+                
+                $('.fd-11-o-clock-sub-total > p:nth-child(2) > span').html(subTotal);
+                if(deliveryCharge > 0) {
+                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + deliveryCharge + '</span>');
+                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(deliveryCharge));
+                } else {
+                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(subTotal);
+                }
+            } else {
+                $('.fd-11-o-clock-basket-address-cont').hide();
+                $('.fd-11-o-clock-basket-items-cont').hide();
+            }
+        });
+        
+        var latitude;
+        var longitude;
+        var area;
+        var newAddressForUser = 0;
+        $('body').on('click', '#fd-11-o-clock-basket-saved-addresses-modal > div > div.saved-address-card', function() {
+            var $this = $(this);
+            if(!$(this).hasClass('new-address')) {
+                $('#fd-11-o-clock-basket-full-name-inp').attr('value', $this.children('p.name').text());
+                $('#fd-11-o-clock-basket-full-name-inp').parent().addClass('is-dirty');
+                $('#fd-11-o-clock-basket-full-name-inp').prop('disabled', true);
+                $('#fd-11-o-clock-basket-full-phone-inp').attr('value', $this.children('p.phone').text());
+                $('#fd-11-o-clock-basket-full-phone-inp').prop('disabled', true);
+                $('#fd-11-o-clock-basket-full-phone-inp').parent().addClass('is-dirty');
+                $('#fd-11-o-clock-basket-full-address-inp').text($this.children('p.address').text());
+                $('#fd-11-o-clock-basket-full-address-inp').parent().addClass('is-dirty');
+                $('#fd-11-o-clock-basket-full-address-inp').prop('disabled', true);
+                $('#fd-11-o-clock-basket-full-landmark-inp').attr('value', $this.children('p.landmark').text());
+                $('#fd-11-o-clock-basket-full-landmark-inp').parent().addClass('is-dirty');
+                $('#fd-11-o-clock-basket-full-landmark-inp').prop('disabled', true);
+                $('#fd-11-o-clock-basket-full-area-inp').attr('value', $this.children('p.area').text());
+                $('#fd-11-o-clock-basket-full-area-inp').prop('disabled', true);
+                area = $this.children('p.area').text();
+                latitude = $this.children('p.latitude').text();
+                longitude = $this.children('p.longitude').text();
+                $('#fd-11-o-clock-basket-saved-addresses-modal').hide();
+                newAddressForUser = 0;
+            } else {
+                newAddressForUser = 1;
+                $('#fd-11-o-clock-basket-saved-addresses-modal').hide();
+                $('#fd-11-o-clock-basket-full-name-inp').attr('value', '');
+                $('#fd-11-o-clock-basket-full-name-inp').parent().removeClass('is-dirty');
+                $('#fd-11-o-clock-basket-full-name-inp').prop('disabled', false);
+                $('#fd-11-o-clock-basket-full-phone-inp').attr('value', '');
+                $('#fd-11-o-clock-basket-full-phone-inp').prop('disabled', false);
+                $('#fd-11-o-clock-basket-full-phone-inp').parent().removeClass('is-dirty');
+                $('#fd-11-o-clock-basket-full-address-inp').text('');
+                $('#fd-11-o-clock-basket-full-address-inp').parent().removeClass('is-dirty');
+                $('#fd-11-o-clock-basket-full-address-inp').prop('disabled', false);
+                $('#fd-11-o-clock-basket-full-landmark-inp').attr('value', '');
+                $('#fd-11-o-clock-basket-full-landmark-inp').parent().removeClass('is-dirty');
+                $('#fd-11-o-clock-basket-full-landmark-inp').prop('disabled', false);
+                $('#fd-11-o-clock-basket-full-area-inp').attr('value', '');
+                $('#fd-11-o-clock-basket-full-area-inp').prop('disabled', false);
+                area = '';
+                latitude = '';
+                longitude = '';
+            }
+            $('.fd-11-o-clock-basket-address-cont p i.material-icons').show();
+        });
+        
+        $('body').on('click', '.fd-11-o-clock-basket-address-cont p i.material-icons', function() {
+            $('#fd-11-o-clock-basket-saved-addresses-modal').show();
+        });
+        
+        $('body').on('click', '#fd-11-o-clock-basket-add-btn', function() {
+            var $this = $(this);
+            var itemQty = parseInt($this.parent().prev().prev().text());
+            var itemId = $this.parent().parent().attr('id');
+            var itemRate = parseInt($this.parent().prev().children('span').text());
+            
+            $this.parent().prev().children('span').text(itemRate + (itemRate / itemQty));
+            subTotal += parseInt(itemRate / itemQty);
+            
+            itemQty++;
+            $this.parent().prev().prev().text(itemQty);
+            $('.fd-11-o-clock-sub-total > p:nth-child(2) > span').text(subTotal);
+
+            if($('.fd-11-o-clock-coupon-disc').attr('id') !== undefined) {
+                if(minAmountForDiscount != 0) {
+                    if(subTotal < minAmountForDiscount) {
+                        $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text('0');
+                        _11_o_clock_toast('The minimum amount to avail discount for this coupon code is ' + minAmountForDiscount, 'error', 7000);
+                        if(subTotal < MINIMUM_AMOUNT) {
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30));
+                        } else {
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(subTotal);
+                        }
+                    } else {
+                        if(subTotal < MINIMUM_AMOUNT) {
+                            if(discountDisc != 0) {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountDisc * subTotal * 0.01));
+                            } else {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountAmnt));
+                            }
+                        } else {
+                            if(discountDisc != 0) {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountDisc * subTotal * 0.01));
+                            } else {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountAmnt));
+                            }
+                        }
+                    }
+                } else {
+                    if(subTotal < MINIMUM_AMOUNT) {
+                        if(discountDisc != 0) {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountDisc * subTotal * 0.01));
+                        } else {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountAmnt));
+                        }
+                    } else {
+                        if(discountDisc != 0) {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                        $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountDisc * subTotal * 0.01));
+                        } else {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountAmnt));
+                        }
+                    }
+                }
+            } else {
+                if(subTotal < MINIMUM_AMOUNT) {
+                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30));
+                } else {
+                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(subTotal);
+                }
+            }
+            
+        });
+        
+        $('body').on('click', '#fd-11-o-clock-basket-remove-btn', function() {
+            var $this = $(this);
+            var itemQty = $this.parent().prev().prev().text();
+            var itemId = $this.parent().parent().attr('id');
+            var itemRate = $this.parent().prev().children('span').html();
+            
+            if((itemQty-1) == 0) {
+                _11_o_clock_toast('You cannot select 0 quantity, if you dont want the item please remove using close/cross icon', 'error', 3000);
+            } else {
+                $this.parent().prev().children('span').text(parseInt(itemRate) - parseInt((itemRate / itemQty)));
+                subTotal -= parseInt(itemRate / itemQty);
+                itemQty--;
+                $this.parent().prev().prev().text(itemQty);
+                $('.fd-11-o-clock-sub-total > p:nth-child(2) > span').text(subTotal);
+
+                if($('.fd-11-o-clock-coupon-disc').attr('id') !== undefined) {
+                    if(minAmountForDiscount != 0) {
+                        if(subTotal < minAmountForDiscount) {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text('0');
+                            _11_o_clock_toast('The minimum amount to avail discount for this coupon code is ' + minAmountForDiscount, 'error', 7000);
+                            if(subTotal < MINIMUM_AMOUNT) {
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30));
+                            } else {
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(subTotal);
+                            }
+                        } else {
+                            if(subTotal < MINIMUM_AMOUNT) {
+                                if(discountDisc != 0) {
+                                    $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountDisc * subTotal * 0.01));
+                                } else {
+                                    $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountAmnt));
+                                }
+                            } else {
+                                if(discountDisc != 0) {
+                                    $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountDisc * subTotal * 0.01));
+                                } else {
+                                    $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountAmnt));
+                                }
+                            }
+                        }
+                    } else {
+                        if(subTotal < MINIMUM_AMOUNT) {
+                            if(discountDisc != 0) {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountDisc * subTotal * 0.01));
+                            } else {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountAmnt));
+                            }
+                        } else {
+                            if(discountDisc != 0) {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountDisc * subTotal * 0.01));
+                            } else {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountAmnt));
+                            }
+                        }
+                    }
+                } else {
+                    if(subTotal < MINIMUM_AMOUNT) {
+                        $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                        $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30));
+                    } else {
+                        $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                        $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(subTotal);
+                    }
+                }
+            }
+        });
+        
+        $('body').on('click', '.fd-11-o-clock-menu-item > i#fd-11-o-clock-remove-btn', function() {
+            var $this = $(this);
+            $this.parent().css({
+                opacity: '0.5',
+                background: 'transparent',
+                color: 'grey'
+            });
+            $this.next().css('text-decoration', 'line-through');
+            $this.next().next().css('text-decoration', 'line-through');
+            $this.next().next().next().css('text-decoration', 'line-through');
+            $this.parent().children().children('img').hide();
+            $this.html('refresh');
+            $this.attr('id', 'fd-11-o-clock-basket-undo-btn');
+            
+            var itemId = $this.parent().attr('id');
+            var itemQty = parseInt($this.next().next().text());
+            var itemRate = parseInt($this.next().next().next().children('span').text());
+            
+            console.log(subTotal);
+            subTotal -= (itemRate);
+            console.log(subTotal);
+            
+            $('.fd-11-o-clock-sub-total > p:nth-child(2) > span').text(subTotal);
+            
+            if($('.fd-11-o-clock-coupon-disc').attr('id') !== undefined) {
+                if(minAmountForDiscount != 0) {
+                    if(subTotal < minAmountForDiscount) {
+                        $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text('0');
+                        _11_o_clock_toast('The minimum amount to avail discount for this coupon code is ' + minAmountForDiscount, 'error', 7000);
+                        if(subTotal < MINIMUM_AMOUNT) {
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30));
+                        } else {
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(subTotal);
+                        }
+                    } else {
+                        if(subTotal < MINIMUM_AMOUNT) {
+                            if(discountDisc != 0) {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountDisc * subTotal * 0.01));
+                            } else {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountAmnt));
+                            }
+                        } else {
+                            if(discountDisc != 0) {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountDisc * subTotal * 0.01));
+                            } else {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountAmnt));
+                            }
+                        }
+                    }
+                } else {
+                    if(subTotal < MINIMUM_AMOUNT) {
+                        if(discountDisc != 0) {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountDisc * subTotal * 0.01));
+                        } else {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountAmnt));
+                        }
+                    } else {
+                        if(discountDisc != 0) {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                        $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountDisc * subTotal * 0.01));
+                        } else {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountAmnt));
+                        }
+                    }
+                }
+            } else {
+                if(subTotal < MINIMUM_AMOUNT) {
+                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30));
+                } else {
+                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(subTotal);
+                }
+            }
+            
+            delete itemsInCart[itemId];
+            
+        });
+        
+        $('body').on('click', '.fd-11-o-clock-menu-item > i#fd-11-o-clock-basket-undo-btn', function() {
+            var $this = $(this);
+            $this.parent().css({
+                opacity: '1',
+                background: '#fff',
+                color: '#000'
+            });
+            $this.next().css('text-decoration', 'none');
+            $this.next().next().css('text-decoration', 'none');
+            $this.next().next().next().css('text-decoration', 'none');
+            $this.parent().children().children('img').show();
+            $this.html('close');
+            $this.attr('id', 'fd-11-o-clock-remove-btn');
+            
+            var itemId = $this.parent().attr('id');
+            var itemQty = parseInt($this.next().next().text());
+            var itemRate = parseInt($this.next().next().next().children('span').text());
+            
+            console.log(subTotal);
+            subTotal += (itemRate);
+            console.log(subTotal);
+            
+            $('.fd-11-o-clock-sub-total > p:nth-child(2) > span').text(subTotal);
+            
+            if($('.fd-11-o-clock-coupon-disc').attr('id') !== undefined) {
+                if(minAmountForDiscount != 0) {
+                    if(subTotal < minAmountForDiscount) {
+                        $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text('0');
+                        _11_o_clock_toast('The minimum amount to avail discount for this coupon code is ' + minAmountForDiscount, 'error', 7000);
+                        if(subTotal < MINIMUM_AMOUNT) {
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30));
+                        } else {
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(subTotal);
+                        }
+                    } else {
+                        if(subTotal < MINIMUM_AMOUNT) {
+                            if(discountDisc != 0) {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountDisc * subTotal * 0.01));
+                            } else {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountAmnt));
+                            }
+                        } else {
+                            if(discountDisc != 0) {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountDisc * subTotal * 0.01));
+                            } else {
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                                $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                                $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountAmnt));
+                            }
+                        }
+                    }
+                } else {
+                    if(subTotal < MINIMUM_AMOUNT) {
+                        if(discountDisc != 0) {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountDisc * subTotal * 0.01));
+                        } else {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30) - parseInt(discountAmnt));
+                        }
+                    } else {
+                        if(discountDisc != 0) {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountDisc * subTotal * 0.01);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                        $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountDisc * subTotal * 0.01));
+                        } else {
+                            $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmnt);
+                            $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                            $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) - parseInt(discountAmnt));
+                        }
+                    }
+                }
+            } else {
+                if(subTotal < MINIMUM_AMOUNT) {
+                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30));
+                } else {
+                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(subTotal);
+                }
+            }
+            
+            itemsInCart[itemId] = itemQty.toString();
+            
+        });
+        
+        google.maps.event.addDomListener(window, 'load', function () {        
+            var input = document.getElementById('fd-11-o-clock-basket-full-area-inp');
+            var options = {
+                componentRestrictions: {country: 'in'}
+            };
+
+            places = new google.maps.places.Autocomplete(input, options);
+            google.maps.event.addListener(places, 'place_changed', function () {
+                place = places.getPlace();
+                area = place.formatted_address;
+                latitude = place.geometry.location.lat();
+                longitude = place.geometry.location.lng();
+            });
+        });
+        
+        var otpGenerated;
+        
+//        $('#fd-11-o-clock-confirm-order-btn').click(function() {
+//            $('#fd-11-o-clock-payment-option-modal').show();
+//        });
+//        
+//        $('body').on('click', '#fd-11-o-clock-payment-option-modal p.online-payment', function() {
+//            $('#fd-11-o-clock-payment-option-modal').hide();
+//            $('#email-for-online-payment-modal').show();    
+//        })
+        
+        $('body').on('click', '#email-for-online-payment-modal button', function() {
+            var email = $('#email-for-online-payment-modal input').val();
+            
+            if(email != '') {
+                $.post('online-payment/payu-payment.php', {
+                    amount: $('.fd-11-o-clock-amount-payable > p > span').text(),
+                    firstname: $('#fd-11-o-clock-basket-full-name-inp').val(),
+                    email: email,
+                    phone:  $('#fd-11-o-clock-basket-full-phone-inp').val(),
+                }, function(data) {
+                    
+                });
+            }
+        });
+        
+        $('#fd-11-o-clock-confirm-order-btn').click(function() {
+            var fullname = $('#fd-11-o-clock-basket-full-name-inp').val();
+            var phone = $('#fd-11-o-clock-basket-full-phone-inp').val();
+            var address = $('#fd-11-o-clock-basket-full-address-inp').val();
+            var landmark = $('#fd-11-o-clock-basket-full-landmark-inp').val();
+            var remarks = $('#fd-11-o-clock-basket-full-remarks-inp').val();
+            area = $('#fd-11-o-clock-basket-full-area-inp').val();
+            
+            // construct itemsInCartString
+            var itemsInCartString = '';
+            itemsInCart = [];
+            
+            $('.fd-11-o-clock-menu-item').each(function() {
+                var $this = $(this);
+                var itemId = $this.attr('id');
+                
+                if($this.children('i').attr('id') != 'fd-11-o-clock-basket-undo-btn') {
+                    if(itemsInCart[itemId] == undefined) {
+                        itemsInCart[itemId] = [];
+                        itemsInCart[itemId] = parseInt($this.children('.quantity').text());
+                    } else {
+                        itemsInCart[itemId] += parseInt($this.children('.quantity').text());
+                    }
+                }
+            });
+            
+            for(var items in itemsInCart)  {
+                itemsInCartString += items + '-s-' + itemsInCart[items] + '-foodinger-';
+            }
+            
+            // construct  addOnsItemsInCartString
+            
+            var addOnsInCartItemsString = '';
+            $('.fd-11-o-clock-menu-item').each(function() {
+                var $this = $(this);
+                
+                if($this.children('i').attr('id') != 'fd-11-o-clock-basket-undo-btn') {
+                    if($(this).children('p:nth-child(2)').children('span').size() > 0) {
+                       for(var i = 0; i < parseInt($this.children('p:nth-child(3)').text()) ; i++) {
+                            var j = 0;
+                            $(this).children('p:nth-child(2)').children('span').each(function() {
+                                addOnsInCartItemsString += $(this).attr('value') + '-s-';
+                                j++;
+                            });
+                            addOnsInCartItemsString += '-i-';
+                        }
+                        addOnsInCartItemsString += '-items-';
+                    }
+                }
+            });
+            
+            // user_id, viewer_id, full_name, phone, address, landmark, remarks, area, items, coupon_id, latitude, longitude
+            if(fullname != '' && phone != '' && address != '' && landmark != '' && area != '') {
+                $('#fd-11-o-clock-confirm-order-btn').html('<div style="width: 40%" class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>');
+                $('#fd-11-o-clock-confirm-order-btn').prop('disabled', true);
+                $('#fd-11-o-clock-confirm-order-btn').css('background-color', 'rgba(242, 182, 28, 0.5)');
+                
+                var couponId = $('.fd-11-o-clock-coupon-disc').attr('id') !== undefined ? $('.fd-11-o-clock-coupon-disc').attr('id'): 0;
+                $.post('json/profile/check-phone-verification.php', {phone: phone}, function(data) {
+                    if(data.trim() == 'verified') {
+                        $.post('json/order/place-order.php', {
+                            _v_id: _v_id,
+                            _u_id: _u_id,
+                            full_name: fullname,
+                            phone: phone,
+                            address: address,
+                            landmark: landmark,
+                            remarks: remarks,
+                            area: area,
+                            latitude: latitude,
+                            longitude: longitude,
+                            items: itemsInCartString,
+                            addOnsInCartItemsString: addOnsInCartItemsString,
+                            source: 'wb',
+                            coupon_id: couponId,
+                            saveNewAddress: newAddressForUser
+                        }, function(data) {
+                            try {
+                                var response = jQuery.parseJSON(data);
+                                if(response['status'] == 'success') {
+                                    $('.fd-11-o-clock-basket-items-cont').css('width', '100%');
+                                    $('.fd-11-o-clock-basket-items-cont').html('<p style="font-size: 1.3em; font-family: ' + "'Open Sans'" + ';color: #cf0050; margin: 2em auto; width: 63%; ">Thank You ' + fullname + ' for your order ' + response['order_no'] + ' from 11 o Clock. You will get confirmation call within few minutes. If You want to confirm your order ASAP, send the last 5 digit of order no using the live chat at the right corner of the screen.</p>');
+                                    $('.fd-11-o-clock-basket-address-cont').hide();
+                                }
+                            } catch(e) {
+                                _11_o_clock_toast('Your order has not been placed due to some server error, please try again or chat with us for help', 'error', 3000);
+                            }
+                        });
+                    } else {
+                        otpGenerated = data.trim();
+                        $('#fd-11-o-clock-phone-verification-modal').show();
+                    }
+                });
+            } else {
+                _11_o_clock_toast('All fields except remarks are required', 'error', 3000);
+            }
+            
+        });
+        
+        $('body').on('click', '#fd-11-o-clock-place-order-after-otp-btn', function() {
+            var otpInput = $('#fd-11-o-clock-basket-otp-inp').val();
+            if(otpGenerated == otpInput) {
+                var fullname = $('#fd-11-o-clock-basket-full-name-inp').val();
+                var phone = $('#fd-11-o-clock-basket-full-phone-inp').val();
+                var address = $('#fd-11-o-clock-basket-full-address-inp').val();
+                var landmark = $('#fd-11-o-clock-basket-full-landmark-inp').val();
+                var remarks = $('#fd-11-o-clock-basket-full-remarks-inp').val();
+                area = $('#fd-11-o-clock-basket-full-area-inp').val();
+                // construct itemsInCartString here
+
+                var itemsInCartString = '';
+                itemsInCart = [];
+
+                $('.fd-11-o-clock-menu-item').each(function() {
+                    var $this = $(this);
+                    var itemId = $this.attr('id');
+
+                    if($this.children('i').attr('id') != 'fd-11-o-clock-basket-undo-btn') {
+                        if(itemsInCart[itemId] == undefined) {
+                            itemsInCart[itemId] = [];
+                            itemsInCart[itemId] = parseInt($this.children('.quantity').text());
+                        } else {
+                            itemsInCart[itemId] += parseInt($this.children('.quantity').text());
+                        }
+                    }
+                });
+
+                for(var items in itemsInCart)  {
+                    itemsInCartString += items + '-s-' + itemsInCart[items] + '-foodinger-';
+                }
+
+                // construct  addOnsItemsInCartString
+
+                var addOnsInCartItemsString = '';
+                $('.fd-11-o-clock-menu-item').each(function() {
+                    var $this = $(this);
+
+                    if($this.children('i').attr('id') != 'fd-11-o-clock-basket-undo-btn') {
+                        if($(this).children('p:nth-child(2)').children('span').size() > 0) {
+                           for(var i = 0; i < parseInt($this.children('p:nth-child(3)').text()) ; i++) {
+                                var j = 0;
+                                $(this).children('p:nth-child(2)').children('span').each(function() {
+                                    addOnsInCartItemsString += $(this).attr('value') + '-s-';
+                                    j++;
+                                });
+                                addOnsInCartItemsString += '-i-';
+                            }
+                            addOnsInCartItemsString += '-items-';
+                        }
+                    }
+                });
+
+                var couponId = $('.fd-11-o-clock-coupon-disc').attr('id') !== undefined ? $('.fd-11-o-clock-coupon-disc').attr('id'): 0;
+                $('#fd-11-o-clock-place-order-after-otp-btn').hide();
+                $('#fd-11-o-clock-place-order-after-loader').show();
+                $.post('json/order/place-order.php', {
+                    _v_id: _v_id,
+                    _u_id: _u_id,
+                    full_name: fullname,
+                    phone: phone,
+                    address: address,
+                    landmark: landmark,
+                    remarks: remarks,
+                    area: area,
+                    latitude: latitude,
+                    longitude: longitude,
+                    items: itemsInCartString,
+                    addOnsInCartItemsString: addOnsInCartItemsString,
+                    source: 'wb',
+                    coupon_id: couponId,
+                    saveNewAddress: newAddressForUser
+                }, function(data) {
+                    try {
+                        var response = jQuery.parseJSON(data);
+                        if(response['status'] == 'success') {
+                            $('.fd-11-o-clock-basket-items-cont').css('width', '100%');
+                            $('.fd-11-o-clock-basket-items-cont').html('<p style="font-size: 1.3em; font-family: ' + "'Open Sans'" + ';color: #cf0050; margin: 2em auto; width: 63%; ">Thank You ' + fullname + ' for your order ' + response['order_no'] + ' from 11 o Clock. You will get confirmation call within few minutes. If You want to confirm your order ASAP, send the last 5 digit of order no using the live chat at the right corner of the screen </p>');
+                            $('.fd-11-o-clock-basket-address-cont').hide();
+                            $('#fd-11-o-clock-phone-verification-modal').hide();
+                        }
+                    } catch(e) {
+                        _11_o_clock_toast('Your order has not been placed due to some server error, please try again or chat with us for help', 'error', 3000);
+                    }
+                });
+                
+            } else {
+                $('#fd-11-o-clock-otp-match-error-p').html('Wrong OTP has been entered');
+            }
+        });
+        
+        $('body').on('click', '#fd-11-o-clock-check-coupon-code-btn', function() {
+            
+            $.get('json/get-u-id.php', function(data) {
+                var response = jQuery.parseJSON(data);
+                if(response['status'] == 'login') {
+                    var couponCode = $('#fd-11-o-clock-check-coupon-code-inp').val();
+                    var totalAmount = $('.fd-11-o-clock-sub-total > p:nth-child(2) > span').text();
+                    var discountAmount = 0;
+                    
+                    if(couponCode != '') {
+                        $.post('json/order/check-coupon.php', {
+                            coupon_code: couponCode,
+                            total_amount: totalAmount
+                        }, function(data) {
+                            var response = jQuery.parseJSON(data);
+                            if(response['status'] == 'failure') {
+                                if(response['msg'] == 'expired') {
+                                    _11_o_clock_toast('The coupon code you have entered has been expired', 'error', 6000);
+                                } else if(response['msg'] == 'already used') {
+                                    _11_o_clock_toast('The coupon code you have entered is already being used by you', 'error', 6000);
+                                } else if(response['msg'] == 'wrong coupon code') {
+                                    _11_o_clock_toast('Wrong coupon code has been checked, please re-check the code and enter again', 'error', 6000);
+                                } else if(response['msg'] == 'below minimum amount') {
+                                    minAmountForDiscount = response['min_amount'];
+                                    _11_o_clock_toast('The coupon code you have entered needs minimum amount of ' + response['min_amount'] + ' to avail discount, add some items to your basket to avail the discount', 'error', 10000);
+                                }
+                                var subTotal = totalAmount;
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text('0');
+                                $('.fd-11-o-clock-coupon-disc').removeAttr('id');
+                                if(subTotal < MINIMUM_AMOUNT) {
+                                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30));
+                                } else {
+                                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(subTotal);
+                                }
+                            } else if(response['status'] == 'success') {
+                                if(response['discount'] != '0') {
+                                    maxDiscountAmount = response['max_discount_amount'];
+                                    var discount = response['discount'];
+                                    discountDisc = discount;
+                                    discountAmount = parseFloat(totalAmount) * parseFloat(discount) * 0.01;
+
+                                    if(maxDiscountAmount != 0) {
+                                        if(discountAmount > maxDiscountAmount) {
+                                            discountAmount = maxDiscountAmount;
+                                            $('#fd-11-o-clock-coupon-code-error').text('Maximum discount for this coupon code is ' + maxDiscountAmount);
+                                        }
+                                    }
+                                } else if(response['amount'] != '0') {
+                                    discountAmount = response['amount'];
+                                    discountAmnt = discountAmount;
+                                }
+                                var subTotal = parseFloat(totalAmount) - parseFloat(discountAmount);
+                                $('.fd-11-o-clock-coupon-disc > p:nth-child(2) > span').text(discountAmount);
+                                $('.fd-11-o-clock-coupon-disc').attr('id', response['coupon_id']);
+                                if(subTotal < MINIMUM_AMOUNT) {
+                                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('<span style="color: #000;">Rs ' + 30 + '</span>');
+                                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(parseInt(subTotal) + parseInt(30));
+                                } else {
+                                    $('.fd-11-o-clock-delivery-charge > p:nth-child(2)').html('Free');
+                                    $('.fd-11-o-clock-amount-payable > p:nth-child(2) > span').html(subTotal);
+                                }
+                            }
+                        });
+                    } else {
+                        _11_o_clock_toast('please enter the coupon code to get discounts', 'error', 3000);
+                    }
+                } else {
+                    _11_o_clock_toast('Please login to use coupon code', 'error', 10000);
+                }
+            });
+        });
+        
+    }
+    
+    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    GET PROFILE DETAILS
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+    
+    if(location.href.indexOf('profile.php') != -1) {
+        
+        var picker = new Pikaday({
+            field: document.getElementById('fd-11-o-clock-profile-dob'),
+            format: 'YYYY-MM-DD',
+            firstDay: 1,
+            defaultDate: new Date(2008, 12, 31),
+            minDate: new Date(1950, 01, 01),
+            maxDate: new Date(2008, 12, 31),
+            yearRange: [1950,2008]
+        });
+        
+        var latitudeNewAddr;
+        var longitudeNewAddr;
+        var areaNewAddr;
+        google.maps.event.addDomListener(window, 'load', function () {        
+            var input = document.getElementById('fd-11-o-clock-add-new-add-area');
+            var options = {
+                componentRestrictions: {country: 'in'}
+            };
+
+            places = new google.maps.places.Autocomplete(input, options);
+            google.maps.event.addListener(places, 'place_changed', function () {
+                place = places.getPlace();
+                areaNewAddr = place.formatted_address;
+                latitudeNewAddr = place.geometry.location.lat();
+                longitudeNewAddr = place.geometry.location.lng();
+            });
+        });
+        
+        if($(window).width() > 768) {
+            var addNewAddressModal = $('[data-remodal-id=fd-11-o-clock-profile-add-new-address-modal-cont').remodal();
+        }
+        
+        var ordersHistoryInnerHtml = '';
+        $.post('json/profile/get-profile-details.php', function(data) {
+            var response = jQuery.parseJSON(data);
+            console.log(response);
+            $('#fd-11-o-clock-profile-name').attr('value', response['profile']['full_name']);
+            $('#fd-11-o-clock-profile-phone').attr('value', response['profile']['phone']);
+            
+            if(response['profile']['food_preference'] == 'veg') {
+                $('#fd-11-o-clock-profile-food-preference-cont > img').attr('src', 'images/icons/veg-icon.png');
+                $('#fd-11-o-clock-profile-food-preference-cont > img').attr('alt', 'veg');
+            } else if(response['profile']['food_preference'] == 'nonveg') {
+                $('#fd-11-o-clock-profile-food-preference-cont > img').attr('src', 'images/icons/both-veg-non-veg-icon.png');
+                $('#fd-11-o-clock-profile-food-preference-cont > img').attr('alt', 'nonveg');
+            }
+            
+            $('#fd-11-o-clock-profile-email').attr('value', response['profile']['email']);
+            
+            if(response['profile']['dob'] != '30/11/-0001') {
+                $('#fd-11-o-clock-profile-dob').attr('value', response['profile']['dob']);
+            } else {
+                $('#fd-11-o-clock-profile-dob').attr('value', 'Not Set');
+            }
+            
+            if(response['profile']['dp'] != null) {
+                $('.fd-11-o-clock-profile-dp-img-cont > img').attr('src', response['profile']['dp']);
+            } else if(response['profile']['gender'] == 'm') {
+                $('.fd-11-o-clock-profile-dp-img-cont > img').attr('src', '/11oclock/images/icons/male-avatar.png');
+            } else if(response['profile']['gender'] == 'f') {
+                $('.fd-11-o-clock-profile-dp-img-cont > img').attr('src', '/11oclock/images/icons/female-avatar.png');
+            } else {
+                $('.fd-11-o-clock-profile-dp-img-cont > img').attr('src', '/11oclock/images/icons/gender-na-avatar.png');
+            }
+            $('.fd-11-o-clock-profile-dp-img-cont > img').attr('alt', response['profile']['full_name'] + ' Foodinger Profile');
+            
+            $.each(response['order_history'], function(index) {
+                var amount = 0;
+                var orderItemsInnerHtml = '';
+                var orderItemsIndex = 0;
+                $.each(response['order_history'][index]['items'], function(index2) {
+                    
+                    if(response['order_history'][index]['items'][index2]['add_ons'] != undefined) {
+                        
+                        amount += (parseInt(response['order_history'][index]['items'][index2]['rate']) * parseInt(response['order_history'][index]['items'][index2]['quantity']));
+                        
+                        var addOnsIndex = 0;
+                        var addOnsCategSize = response['order_history'][index]['items'][index2]['add_ons'].length / response['order_history'][index]['items'][index2]['quantity'];
+                        
+                        for(var i = 0; i < parseInt(response['order_history'][index]['items'][index2]['quantity']); i++) {
+                            orderItemsInnerHtml += '<tr value="' + response['order_history'][index]['items'][index2]['id'] + '"><td class="name">' + response['order_history'][index]['items'][index2]['name'] + '<br/>';
+                            
+                            var temp = addOnsIndex;
+                            var tempRate = 0;
+                            for(addOnsIndex = i*addOnsCategSize; addOnsIndex < temp + addOnsCategSize; addOnsIndex++) {
+                                console.log(typeof addOnsIndex);
+                                if(response['order_history'][index]['items'][index2]['add_ons'][addOnsIndex] != undefined) {
+                                    orderItemsInnerHtml += '<span value="' + response['order_history'][index]['items'][index2]['add_ons'][addOnsIndex]['id'] + '">' + response['order_history'][index]['items'][index2]['add_ons'][addOnsIndex]['name'] + '</span>, ';
+                                    tempRate += parseInt(response['order_history'][index]['items'][index2]['add_ons'][addOnsIndex]['rate']);
+                                    amount += parseInt(response['order_history'][index]['items'][index2]['add_ons'][addOnsIndex]['rate']);
+                                }
+                            }
+                            
+                            orderItemsInnerHtml += '</td><td class="quantity">' + 1 + '</td><td class="price">' + (parseInt(response['order_history'][index]['items'][index2]['rate']) + parseInt(tempRate)) + "</td></tr>";
+                        }
+                        
+                    } else {
+                        amount += (parseInt(response['order_history'][index]['items'][index2]['rate']) * parseInt(response['order_history'][index]['items'][index2]['quantity']));
+                        orderItemsInnerHtml += '<tr value="' + response['order_history'][index]['items'][index2]['id'] + '"><td class="name">' + response['order_history'][index]['items'][index2]['name'] + '</td><td class="quantity">' + response['order_history'][index]['items'][index2]['quantity'] + '</td><td class="price">' + response['order_history'][index]['items'][index2]['rate'] + "</td></tr>";
+                    }
+                });
+                ordersHistoryInnerHtml += '<div class="fd-11-o-clock-order-hist-card"><p><span>' + response['order_history'][index]['order_no'] + '</span><span>Rs <i>' + amount + '</i></span></p><p>' + response['order_history'][index]['date'] + '</p><table>' + orderItemsInnerHtml + '</table><button class="reorder">Reorder</button></div>';
+            });
+            
+            if(response['order_history'] != undefined) {
+                $('.fd-11-o-clock-order-hist-cont').append(ordersHistoryInnerHtml);
+            } else {
+                $('.fd-11-o-clock-order-hist-cont').append('<img src="images/icons/sad-emoji.png" style="width: 19%; left: 40%; position: relative; margin-top: 6%; margin-bottom: 3%;" /><p style="font-size: 20px;font-weight: 700;margin: 0 auto;width: 70%;">You have not tried any of our yummy dishes yet</p>');
+            }
+            
+            $('.fd-11-o-clock-order-hist-card').each(function() {
+                var itemsInCartSize = $(this).children('table').children('tbody').children('tr').size();
+                var $this = $(this).children('table').children('tbody');
+                for(var i = 0; i < itemsInCartSize; i++) {
+                    for(var j = i+1; j < itemsInCartSize; ) {
+                        
+                        if($this.children('tr:nth-child(' + i + ')').children('td.name').html() != undefined || $this.children('tr:nth-child(' + j + ')').children('td.name').html() != undefined) {
+                            if($this.children('tr:nth-child(' + i + ')').children('td.name').html() == $this.children('tr:nth-child(' + j + ')').children('td.name').html()) {
+                                $this.children('tr:nth-child(' + j + ')').remove();
+                                $this.children('tr:nth-child(' + i + ')').children('.price').text(parseInt($this.children('tr:nth-child(' + i + ')').children('.price').text()) + (parseInt($this.children('tr:nth-child(' + i + ')').children('.price').text()) / (parseInt($this.children('tr:nth-child(' + i + ')').children('.quantity').text()))));
+                                
+                                $this.children('tr:nth-child(' + i + ')').children('.quantity').text(parseInt($this.children('tr:nth-child(' + i + ')').children('.quantity').text()) + 1);
+                            } else {
+                                j++;
+                            }
+                        } else {
+                            j++;
+                        }
+                    }
+                }
+            });
+            
+            var savedAddressesInnerHtml = '';
+            $.each(response['saved_addresses'], function(index) {
+                savedAddressesInnerHtml += '<div value="' + response['saved_addresses'][index]['id'] + '"><i class="material-icons delete">delete_forever</i><p>' + response['saved_addresses'][index]['name'] + '</p><p>' + response['saved_addresses'][index]['phone'] + '</p><p>' + response['saved_addresses'][index]['address'] + '</p><p>' + response['saved_addresses'][index]['landmark'] + '</p><p style="font-weight: 700; line-height: 1.2">' + response['saved_addresses'][index]['area'] + '</p></div>';
+            });
+            
+            if(response['saved_addresses'] != undefined) {
+                $('.fd-11-o-clock-saved-addresses-cont').append(savedAddressesInnerHtml);
+            } else {
+                $('.fd-11-o-clock-saved-addresses-cont').append('<div style="position: relative;top: -3em;padding: 20px 19px;text-align: center;"><p style="margin-bottom: 0; font-weight: 700;">Save your address to save time while placing order</p></div>');
+            }
+        });
+        
+        /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        REORDER BUTTON PROFILE
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+        
+        $('body').on('click', '.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div button.reorder', function() {
+            // 23-s-3-foodinger-24-s-1-foodinger-57-s-1-foodinger-
+            // 	41-s-44-s-46-s--i-41-s-44-s-46-s--i-42-s-45-s-47-s--i--items-
+            
+            // 23-s-3-foodinger-24-s-1-foodinger-57-s-1-foodinger-
+            //  41-s-44-s-46-s--i-41-s-44-s-46-s--i--items-42-s-45-s-47-s--i--items-
+            
+            
+            // 3-s--i-3-s--i-2-s--i--items-41-s-44-s-46-s--i-41-s-44-s-46-s--i--
+            
+            var $curEl = $(this);
+            
+            var itemsInCartString = '';
+            itemsInCart = [];
+            
+            $curEl.parent().children('table').children('tbody').children('tr').each(function() {
+                var $this = $(this);
+                var itemId = $this.attr('value');
+                
+                if($this.children('td.name').children('span').size() > 0) {
+                    if(itemsInCart[itemId] == undefined) {
+                        itemsInCart[itemId] = [];
+                        itemsInCart[itemId] = parseInt($this.children('.quantity').text());
+                    } else {
+                        itemsInCart[itemId] += parseInt($this.children('.quantity').text());
+                    }
+                } else {
+                    itemsInCart[itemId] = parseInt($this.children('.quantity').text());
+                }
+            });
+            
+            for(var items in itemsInCart)  {
+                itemsInCartString += items + '-s-' + itemsInCart[items] + '-foodinger-';
+            }
+            
+            var addOnsInCartItemsString = '';
+            $curEl.parent().children('table').children('tbody').children('tr').each(function() {
+                var $this = $(this);
+                
+                if($this.children('td.name').children('span').size() > 0) {
+                   for(var i = 0; i < parseInt($this.children('.quantity').text()) ; i++) {
+                        var j = 0;
+                        $this.children('td.name').children('span').each(function() {
+                            addOnsInCartItemsString += $(this).attr('value') + '-s-';
+                            j++;
+                        });
+                        addOnsInCartItemsString += '-i-';
+                    }
+                    if($this.attr('value') != $this.next().attr('value')) {
+                        addOnsInCartItemsString += '-items-';
+                    }
+                }
+            });
+            
+            console.log(addOnsInCartItemsString);
+            
+            $.get('/11oclock/json/order/save-items.php',  {
+                uid: guid(),
+                items: itemsInCartString,
+                addOns: addOnsInCartItemsString
+            }, function(data) {
+                if(data.trim() == 'success') {
+                    window.location = 'http://foodinger.in/11oclock/basket.php?uid='+guid();
+                }
+            });
+        });
+        
+        /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        DELETE SAVED ADDRESSES
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+        
+        $('body').on('click', '.fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont i.delete', function() {
+            var $this = $(this);
+            var address_id = $this.parent().attr('value');
+            
+            $.post('json/profile/delete-saved-address.php', {address_id: address_id}, function(data) {
+                if(data.trim() == 'success') {
+                    _11_o_clock_toast('Address is removed successfully', 'success', 5000);
+                    $this.parent().remove();
+                } else {
+                    _11_o_clock_toast('Some server error occurred, please try again', 'error', 5000);
+                }
+            });
+        });
+        
+        /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ADD NEW ADDRESS
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+        
+        $('body').on('click', '.fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont > div:nth-child(2)', function() {
+            $('body').css('position', 'fixed');
+            if($(window).width() > 768) {
+                addNewAddressModal.open();
+            } else {
+                $('#fd-11-o-clock-profile-add-new-address-modal').show();
+            }
+        });
+        
+        $('body').on('click', '#fd-11-o-clock-save-new-add-btn', function() {
+            
+            var full_name = $('#fd-11-o-clock-add-new-add-name').val();
+            var phone = $('#fd-11-o-clock-add-new-add-phone').val();
+            var address = $('#fd-11-o-clock-add-new-add-address').val();
+            var landmark = $('#fd-11-o-clock-add-new-add-landmark').val();
+            area = $('#fd-11-o-clock-add-new-add-area').val();
+            
+            if(phoneNoValidation(phone)) {
+                $('#fd-11-o-clock-save-new-add-btn').hide();
+                $('#fd-11-o-clock-save-new-add-loader').show();
+                $.post('json/profile/add-new-address.php', {
+                    full_name: full_name,
+                    phone: phone,
+                    address: address,
+                    landmark: landmark,
+                    area: area,
+                    latitude: latitudeNewAddr,
+                    longitude: longitudeNewAddr
+                }, function(data) {
+                    if(data.trim() == 'success') {
+                        _11_o_clock_toast('New address is saved', 'success', 5000);
+                        $('body').css('position', 'inherit');
+                        if($(window).width() > 768) {
+                            addNewAddressModal.close();
+                        } else {
+                            $('#fd-11-o-clock-profile-add-new-address-modal').hide();
+                        }
+                    } else if(data.trim() == 'already exists') {
+                        _11_o_clock_toast('You have already saved this address', 'error', 3000);
+                    } else {
+                        _11_o_clock_toast('some server error occurred, please chat with us to solve the problem', 'error', 5000);
+                    }
+                });
+            } else {
+                _11_o_clock_toast('Please enter 10 digit mobile number', 'error', 5000);
+            }
+            
+        });
+        
+        /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        EDIT PROFILE
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+        
+        $('body').on('click', '#fd-11-o-clock-profile-user-details-edit-btn', function() {
+            $('.fd-11-o-clock-profile-inp-cont > input').prop('disabled', false);
+            $('#fd-11-o-clock-profile-name').focus();
+            $('#fd-11-o-clock-profile-name').val($('#fd-11-o-clock-profile-name').val());
+            $('.fd-11-o-clock-edit-profile-inp-cont').css('display', 'block');
+            $('#fd-11-o-clock-profile-food-preference-cont > img:nth-child(4)').hide();
+            $('.fd-11-o-clock-profile-user-details-edit-btn').html('Save');
+            $('#fd-11-o-clock-profile-user-details-edit-btn').attr('id', 'fd-11-o-clock-profile-user-details-save-btn');
+            
+            if($('#fd-11-o-clock-profile-food-preference-cont > img:nth-child(4)').attr('alt') == 'veg') {
+                $('#fd-11-o-clock-edit-profile-dob-1').parent().addClass('is-checked');
+                $('#fd-11-o-clock-edit-profile-dob-2').parent().removeClass('is-checked');
+                $('#fd-11-o-clock-edit-profile-dob-1').attr('checked', 'checked');
+                $('#fd-11-o-clock-edit-profile-dob-2').removeAttr('checked');
+            } else if($('#fd-11-o-clock-profile-food-preference-cont > img:nth-child(4)').attr('alt') == 'nonveg') {
+                $('#fd-11-o-clock-edit-profile-dob-2').parent().addClass('is-checked');
+                $('#fd-11-o-clock-edit-profile-dob-1').parent().removeClass('is-checked');
+                $('#fd-11-o-clock-edit-profile-dob-2').attr('checked', 'checked');
+                $('#fd-11-o-clock-edit-profile-dob-1').removeAttr('checked');
+            }
+        });
+        
+        var profileChanged = 0;
+        
+        $('body').on('click', '#fd-11-o-clock-profile-user-details-save-btn', function() {
+            
+            if($('#fd-11-o-clock-profile-food-preference-cont > img:nth-child(4)').attr('alt') != $('input[name=fd-11-o-clock-edit-profile-food-preference]:checked').val()) {
+                profileChanged = 1;
+            } else {
+                profileChanged = 0;
+            }
+            
+            $('.fd-11-o-clock-profile-inp-cont > input').each(function() {
+                if($(this).val() != $(this).attr('value')) {
+                    profileChanged = 1;
+                }
+            });
+            
+            var phone = $('#fd-11-o-clock-profile-phone').val() == $('#fd-11-o-clock-profile-phone').attr('value') ? 0 : $('#fd-11-o-clock-profile-phone').val();
+            var email = $('#fd-11-o-clock-profile-email').val() == $('#fd-11-o-clock-profile-email').attr('value') ? 0 : $('#fd-11-o-clock-profile-email').val();
+            var dob = '';
+            
+            if($('#fd-11-o-clock-profile-dob').val().indexOf('/') != -1) {
+                var tempDob = $('#fd-11-o-clock-profile-dob').val().split('/');
+                dob = tempDob[2] + '-' + tempDob[1] + '-' + tempDob[0];
+            } else {
+                dob = $('#fd-11-o-clock-profile-dob').val();
+            }
+            
+            if(profileChanged == 1) {
+                $.post('json/profile/save-edited-profile.php', {
+                    full_name: $('#fd-11-o-clock-profile-name').val(),
+                    phone: phone,
+                    email: email,
+                    dob: dob,
+                    food_preference: $('input[name=fd-11-o-clock-edit-profile-food-preference]:checked').val()
+                }, function(data) {
+                    if(data.trim() == 'email already exists') {
+                        _11_o_clock_toast('The Email you have entered has already been registered', 'error', 3000);
+                        $('#fd-11-o-clock-profile-email').css('border-bottom', '3px solid red;');
+                    } else if(data.trim() == 'phone already exists') {
+                        _11_o_clock_toast('The phone number you have entered has already been registered', 'error', 3000);
+                        $('#fd-11-o-clock-profile-phone').css('border-bottom', '3px solid red;');
+                    } else if(data.trim() == 'success') {
+                        _11_o_clock_toast('Profile updated successfully', 'success', 3000);
+                        $('.fd-11-o-clock-profile-inp-cont > input').prop('disabled', true);
+                        $('.fd-11-o-clock-edit-profile-inp-cont').css('display', 'none');
+                        $('#fd-11-o-clock-profile-user-details-save-btn').html('Edit');
+                        $('#fd-11-o-clock-profile-user-details-save-btn').attr('id', 'fd-11-o-clock-profile-user-details-edit-btn');
+                        
+                        if($('input[name=fd-11-o-clock-edit-profile-food-preference]:checked').val() == 'veg') {
+                            $('#fd-11-o-clock-profile-food-preference-cont > img').attr('src', 'images/icons/veg-icon.png');
+                            $('#fd-11-o-clock-profile-food-preference-cont > img').attr('alt', 'veg');
+                        } else if($('input[name=fd-11-o-clock-edit-profile-food-preference]:checked').val() == 'nonveg') {
+                            $('#fd-11-o-clock-profile-food-preference-cont > img').attr('src', 'images/icons/both-veg-non-veg-icon.png');
+                            $('#fd-11-o-clock-profile-food-preference-cont > img').attr('alt', 'nonveg');
+                        }
+                        $('#fd-11-o-clock-profile-food-preference-cont > img:nth-child(4)').show();
+                    }
+                });
+            }
+            
+        });
+        
+        $('body').on('click', '#fd-11-o-clock-action-bar-logout-btn', function() {
+            $.post('json/profile/logout.php', function(data) {
+                if(data.trim() == 'success') {
+                    window.location = 'http://foodinger.in/11oclock' + '?guid=' + guid();
+                }
+            });
+        });
+    }
+    
+})(window);

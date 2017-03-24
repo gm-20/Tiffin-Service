@@ -1,0 +1,2464 @@
+@import 'https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700';
+
+@font-face {
+    font-family: TwoCent;
+    src: url(../fonts/two-cent.ttf);
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    GLOBAL STYLES
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+.container {
+    overflow: hidden;
+}
+
+.mdl-layout__title, .mdl-layout-title {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 2rem;
+}
+
+.mdl-layout__header, .mdl-layout__tab-bar, .mdl-layout__tab-bar-button {
+    background-color: #3e2f44;
+}
+
+.slick-slide {
+    margin: 1em;
+    border-radius: 10px;
+}
+
+.slick-slider {
+    top: -8em;
+    z-index: 1;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    TOAST
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#toast-container .toast {
+    background-color: rgba(255, 0, 90, 0.5);
+}
+
+#fd-11-o-clock-toast-cont {
+    display: none;
+    position: fixed;
+    right: 9px;
+    z-index: 10002;
+    width: 21%;
+    background-color: transparent;
+    padding: 10px 1em;
+    font-size: 1.2em;
+    color: #fff;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    top: 10px;
+}
+
+#fd-11-o-clock-toast-cont p {
+    display: inline;
+}
+
+#fd-11-o-clock-toast-cont i {
+    font-size: 1.1em;
+    position: relative;
+    top: 4px;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    MATERIALIZE LOADER
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+#fd-11-o-clock-loader-bck {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    height: 100%;
+    z-index: 1;
+    display: none;
+}
+
+#fd-11-o-clock-loader-bck .circular {
+    left: 46%;
+    top: 42%;
+}
+
+.circular {
+  -webkit-animation: rotate 2s linear infinite;
+          animation: rotate 2s linear infinite;
+  height: 50px;
+  left: 50%;
+  position: absolute;
+  top: 20%;
+  width: 50px;
+}
+
+.path {
+  stroke-dasharray: 1,200;
+  stroke-dashoffset: 0;
+  -webkit-animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+          animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+  stroke-linecap: round;
+  stroke: #ff0050;
+}
+
+@-webkit-keyframes rotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes dash {
+  0% {
+    stroke-dasharray: 1,200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -124;
+  }
+}
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1,200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -124;
+  }
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    MODAL
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-clock-retry-otp {
+    color: #ff0020;
+    cursor: pointer;
+}
+
+#fd-11-o-clock-phone-verification-modal {
+    position: fixed;
+    top: 0;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.85);
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+#fd-11-o-clock-phone-verification-modal > div {
+    margin: 0 auto;
+    background-color: #fff;
+    width: 22%;
+    position: relative;
+    top: 25%;
+    border-radius: 5px;
+    padding: 2em 1em;
+    text-align: center;
+}
+
+#fd-11-o-clock-phone-verification-modal p.title {
+    font-size: 20px;
+}
+
+#fd-11-o-clock-basket-otp-inp {
+    font-size: 18px;
+    background-color: #dfdfdf;
+    border: none;
+    padding: 8px 11px;
+    outline: none;
+}
+
+#fd-11-o-clock-place-order-after-otp-btn {
+    background-color: #ff0050;
+    border: none;
+    padding: 8px 1em;
+    color: #fff;
+    font-size: 1.3em;
+    cursor: pointer;
+    margin-top: 1em;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    LOGIN MODAL
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-login-modal-id {
+    background: #dfdfdf;
+    width: 100%;
+    max-width: 95%;
+    min-height: 95%;
+    background-image: url(images/login-bck.jpg);
+}
+
+#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont {
+    display: inline-block;
+    width: 46%;
+}
+
+#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont:nth-child(2) {
+    position: relative;
+    top: 0;
+    width: 63%;
+    left: -3em;
+}
+
+#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont:nth-child(2) p {
+    font-family: 'Open sans';
+    font-style: italic;
+    font-size: 1.4em;
+    text-decoration: underline;
+    margin-left: 1em;
+}
+
+#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont:nth-child(2) li {
+    text-align: left;
+    font-weight: 700;
+    font-size: 1.6em;
+    line-height: 1.5;
+    width: 90%;
+}
+
+#fd-11-o-clock-login-modal-id p {
+    text-align: left;
+    font-family: 'Open sans';
+    font-style: italic;
+    text-decoration: underline;
+    font-size: 20px;
+    color: #777;
+}
+
+#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont:nth-child(3) {
+    background: #fff;
+    padding: 15px 2em;
+    width: 31%;
+}
+
+#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont:nth-child(3) p:first-child {
+    font-family: 'Open sans';
+    font-style: italic;
+    font-size: 1.8em;
+    color: #ff0050;
+}
+
+#fd-11-o-clock-login-modal-id .fd-11-o-clock-login-ins-cont:nth-child(3) .mdl-textfield {
+    left: 4%;
+    width: 85%;
+}
+
+#fd-11-o-clock-login-modal-id i {
+    float: left;
+    position: relative;
+    top: 22px;
+    left: 1%;
+}
+
+#fd-11-o-clock-login-modal-id #fd-11-o-clock-already-account-link, #fd-11-o-clock-login-modal-id #fd-11-o-clock-new-user-link {
+    float: right;
+    margin-top: 0em;
+    margin-bottom: 0;
+    position: relative;
+    right: -13px;
+    font-size: 1.3em;
+    text-decoration: underline;
+    color: #ff0050;
+    cursor: pointer;
+}
+
+#fd-11-o-clock-fb-connect {
+    position: relative;
+    top: 7px;
+    border: none;
+    font-size: 16px;
+    padding: 10px 1em;
+    margin-bottom: 1em;
+    background-color: transparent;
+    width: 40%;
+}
+
+#fd-11-o-clock-login-modal-id #fd-11-o-clock-fb-connect img {
+    width: 105%;
+}
+
+#fd-11-o-clock-login-modal-id #fd-11-o-clock-already-account-link:hover {
+    text-decoration: none;
+}
+
+#fd-11-o-clock-login-modal-id #fd-11-o-clock-new-user-link:hover {
+    text-decoration: none;
+}
+
+#fd-11-o-clock-reg-create-btn, #fd-11-o-clock-login-btn {
+    float: left;
+    border: none;
+    margin-top: 1em;
+    height: 2em;
+    padding: 0 1em;
+    font-size: 1.3em;
+    background: #ff0050;
+    color: #fff;
+    cursor: pointer;
+}
+
+.remodal-close {
+    float: right;
+    right: 0;
+    left: 97%;
+}
+
+.remodal-close:before {
+    font-size: 47px;
+}
+
+#fd-11-o-clock-login-modal-id img {
+    width: 40%;
+}
+
+.mdl-radio.is-upgraded {
+    padding-left: 0;
+    font-family: 'Open sans';
+    font-size: 14px;
+    font-style: italic;
+    text-align: left;
+    left: 0;
+    width: 50%;
+    display: inline-block;
+}
+
+.mdl-radio__outer-circle {
+    top: 7px;
+    left: -30px;
+}
+
+.mdl-radio__inner-circle {
+    top: 11px;
+    left: -26px
+}
+
+.fd-11-o-clock-login-ins-cont .fd-11-o-clock-login-inp-cont {
+    left: 13%;
+    top: -8px;
+}
+
+.fd-11-o-clock-reg-inp-cont, .mdl-radio.is-upgraded.fd-11-o-clock-reg-inp-cont {
+    display: none;
+}
+
+.fd-11-o-clock-reg-inp-cont input:not([type]), .fd-11-o-clock-reg-inp-cont input[type=text], .fd-11-o-clock-reg-inp-cont input[type=password], .fd-11-o-clock-reg-inp-cont input[type=email], .fd-11-o-clock-reg-inp-cont input[type=url], .fd-11-o-clock-reg-inp-cont input[type=time], .fd-11-o-clock-reg-inp-cont input[type=date], .fd-11-o-clock-reg-inp-cont input[type=datetime], .fd-11-o-clock-reg-inp-cont input[type=datetime-local], .fd-11-o-clock-reg-inp-cont input[type=tel], .fd-11-o-clock-reg-inp-cont input[type=number], .fd-11-o-clock-reg-inp-cont input[type=search], .fd-11-o-clock-reg-inp-cont textarea.materialize-textarea {
+    height: 2rem;
+    margin: 0;
+}
+
+.fd-11-o-clock-reg-inp-cont input:not([type]):focus:not([readonly]), .fd-11-o-clock-reg-inp-cont input[type=text]:focus:not([readonly]), .fd-11-o-clock-reg-inp-cont input[type=password]:focus:not([readonly]), .fd-11-o-clock-reg-inp-cont input[type=email]:focus:not([readonly]), .fd-11-o-clock-reg-inp-cont input[type=url]:focus:not([readonly]), .fd-11-o-clock-reg-inp-cont input[type=time]:focus:not([readonly]), .fd-11-o-clock-reg-inp-cont input[type=date]:focus:not([readonly]), .fd-11-o-clock-reg-inp-cont input[type=datetime]:focus:not([readonly]), .fd-11-o-clock-reg-inp-cont input[type=datetime-local]:focus:not([readonly]), .fd-11-o-clock-reg-inp-cont input[type=tel]:focus:not([readonly]), .fd-11-o-clock-reg-inp-cont input[type=number]:focus:not([readonly]), .fd-11-o-clock-reg-inp-cont input[type=search]:focus:not([readonly]), .fd-11-o-clock-reg-inp-cont textarea.materialize-textarea:focus:not([readonly]) {
+    border-bottom: 1px solid #ff0050;
+    box-shadow: 0 0 0 0;
+}
+
+.fd-11-o-clock-login-inp-cont input:not([type]), .fd-11-o-clock-login-inp-cont input[type=text], .fd-11-o-clock-login-inp-cont input[type=password], .fd-11-o-clock-login-inp-cont input[type=email], .fd-11-o-clock-login-inp-cont input[type=url], .fd-11-o-clock-login-inp-cont input[type=time], .fd-11-o-clock-login-inp-cont input[type=date], .fd-11-o-clock-login-inp-cont input[type=datetime], .fd-11-o-clock-login-inp-cont input[type=datetime-local], .fd-11-o-clock-login-inp-cont input[type=tel], .fd-11-o-clock-login-inp-cont input[type=number], .fd-11-o-clock-login-inp-cont input[type=search], .fd-11-o-clock-login-inp-cont textarea.materialize-textarea {
+    height: 2rem;
+    margin: 0;
+}
+
+.fd-11-o-clock-login-inp-cont input:not([type]):focus:not([readonly]), .fd-11-o-clock-login-inp-cont input[type=text]:focus:not([readonly]), .fd-11-o-clock-login-inp-cont input[type=password]:focus:not([readonly]), .fd-11-o-clock-login-inp-cont input[type=email]:focus:not([readonly]), .fd-11-o-clock-login-inp-cont input[type=url]:focus:not([readonly]), .fd-11-o-clock-login-inp-cont input[type=time]:focus:not([readonly]), .fd-11-o-clock-login-inp-cont input[type=date]:focus:not([readonly]), .fd-11-o-clock-login-inp-cont input[type=datetime]:focus:not([readonly]), .fd-11-o-clock-login-inp-cont input[type=datetime-local]:focus:not([readonly]), .fd-11-o-clock-login-inp-cont input[type=tel]:focus:not([readonly]), .fd-11-o-clock-login-inp-cont input[type=number]:focus:not([readonly]), .fd-11-o-clock-login-inp-cont input[type=search]:focus:not([readonly]), .fd-11-o-clock-login-inp-cont textarea.materialize-textarea:focus:not([readonly]) {
+    border-bottom: 1px solid #ff0050;
+    box-shadow: 0 0 0 0;
+}
+
+.fd-11-o-clock-login-ins-cont div.fd-11-o-clock-reg-inp-cont, .fd-11-o-clock-login-ins-cont div.fd-11-o-clock-login-inp-cont  {
+    padding: 15px 0;
+}
+
+#fd-11-o-clock-login-modal-id p#fd-11-o-clock-forget-password-link {
+    font-size: 16px;
+    font-family: cursive;
+    color: #000;
+    cursor: pointer;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    FORGET PASSWORD MODAL
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-forget-password-modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.9);
+    width: 100%;
+    top: 0;
+    height: 100%;
+}
+
+#fd-11-o-clock-forget-password-modal > div {
+    margin: 0 auto;
+    background-color: #fff;
+    width: 45%;
+    padding: 3em 1em;
+    position: relative;
+    top: 5em;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#fd-11-o-clock-forget-password-modal p.title {
+    font-size: 23px;
+    color: #ff0050;
+    font-family: 'Open sans';
+}
+
+#fd-11-o-clock-forget-password-modal input {
+    width: 45%;
+}
+
+#fd-11-o-clock-forget-password-modal input#otp, #fd-11-o-clock-forget-password-modal button.change-password, #fd-11-o-clock-forget-password-modal button.save, #fd-11-o-clock-forget-password-modal input.new-password, #fd-11-o-clock-forget-password-modal svg.circular {
+    display: none;
+}
+
+#fd-11-o-clock-forget-password-modal svg.circular {
+    position: absolute;
+    top: 12em;
+    left: 50%;
+}
+
+#fd-11-o-clock-forget-password-modal button {
+    border: none;
+    font-size: 20px;
+    padding: 5px 18px;
+    color: #fff;
+    background-color: #ff0050;
+}
+
+#fd-11-o-clock-forget-password-modal p.otp-not-received {
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: 2em;
+    display: none;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    PHONE NUMBER AFTER FB LOGIN AND NUMBER VERIFICATION USING OTP
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+.fd-11-o-clock-fb-login-phone-verific {
+    display: none;
+}
+
+#fd-11-o-clock-fb-login-phone-inp, .fd-11-o-clock-fb-login-phone-verification-inp {
+    width: 50%
+}
+
+#fd-11-o-clock-fb-login-phone-continue-btn, #fd-11-o-clock-fb-login-phone-save-btn {
+    background-color: #ff0050;
+    border: none;
+    color: #fff;
+    padding: 10px 1em;
+    font-size: 18px;
+    position: relative;
+    top: 10px;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ACTION BAR
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+.fd-11-o-clock-action-bar {
+    background: #3e2f44;
+    height: 4em;
+    color: #fff;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+}
+
+.fd-11-o-clock-action-bar p {
+    font-size: 1.6rem;
+    font-family: 'Open sans';
+    font-style: italic;
+    margin-left: 1em;
+}
+
+.fd-11-o-clock-action-bar img {
+    float: left;
+    width: 3%;
+    position: relative;
+    top: -8px;
+    margin-right: 1em;
+}
+
+.fd-11-o-clock-action-bar > div > p > a > img {
+    width: 3%;
+    top: -10px;
+    left: -6.5em;
+}
+
+.fd-11-o-clock-action-bar p img {
+    width: 7%;
+    float: right;
+    position: relative;
+    top: -14px;
+    cursor: pointer;
+    background-color: transparent;
+    margin-right: 0;
+    left: -3.2em;
+}
+
+.fd-11-o-clock-action-bar .fd-11-o-clock-search-dish-inp {
+    float: right;
+    z-index: 1;
+    position: relative;
+    top: -45px;
+    height: 33px;
+    width: 24%;
+    border: none;
+    left: -13em;
+    padding: 0 10px;
+}
+
+.fd-11-o-clock-action-bar .fd-11-o-clock-search-dish-inp:focus {
+    outline: none;
+}
+
+.fd-11-o-clock-action-bar i {
+    float: right;
+    font-size: 1.8rem;
+    position: relative;
+    top: -43.6px;
+    left: 7.2em;
+    color: #3e2f44;
+    padding: 4px;
+}
+
+#fd-11-o-clock-action-bar-login-btn {
+    position: relative;
+    float: right;
+    top: -39px;
+    left: 0;
+    border: none;
+    background: #fff;
+    font-size: 1.2em;
+    padding: 0px 10px;
+    cursor: pointer;
+    font-family: 'Open sans';
+    height: 25px;
+    color: #000;
+}
+
+#fd-11-o-clock-action-bar-user-btn {
+    float: right;
+    position: relative;
+    top: -3em;
+    background-color: transparent;
+    border: none;
+    left: 0em;
+    width: 5%;
+}
+
+#fd-11-o-clock-action-bar-user-btn img {
+    width: 64%;
+    float: right;
+    position: relative;
+    top: -7px;
+    left: 0;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    SEARCH BAR
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-dish-search-inp {
+    background-color: #fff;
+    width: 30%;
+    margin-left: 1em;
+    padding-left: 5px;
+    font-family: 'Open sans';
+    font-style: italic;
+    font-size: 20px;
+    border-bottom: 1px solid #ff0050;
+}
+
+input#fd-11-o-clock-dish-search-inp:not([type]):focus:not([readonly]), input#fd-11-o-clock-dish-search-inp[type=text]:focus:not([readonly]) {
+    border-bottom: 2px solid #ff0050;
+    box-shadow: 0 12px 15px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+input#fd-11-o-clock-dish-search-inp::-webkit-input-placeholder {
+   color: #555;
+}
+
+input#fd-11-o-clock-dish-search-inp:-moz-placeholder { /* Firefox 18- */
+   color: #555;
+}
+
+input#fd-11-o-clock-dish-search-inp::-moz-placeholder {  /* Firefox 19+ */
+   color: #555;
+}
+
+input#fd-11-o-clock-dish-search-inp:-ms-input-placeholder {  
+   color: #555;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    HOME PAGE
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-menu-category-row {
+    margin: 0 0px;
+    width: 100%;
+    position: relative;
+    top: -6em;
+}
+
+#fd-11-o-clock-menu-category-row > div.row {
+    margin: 0;
+}
+
+#fd-11-o-clock-menu-category-row > div.row > div.col {
+    height: 87px;
+}
+
+#fd-11-o-clock-menu-category-row > div.row:nth-child(2) > div.col {
+    height: 158px;
+}
+
+#fd-11-o-clock-menu-category-row div.row img {
+    width: 100%;
+    border-radius: 5px;
+}
+
+#fd-11-o-clock-menu-category-row div.row p {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    top: -2em;
+    font-family: 'Open sans';
+    font-weight: 700;
+    color: #fff;
+    font-size: 18px;
+}
+
+#fd-11-o-clock-menu-category-row div.row p:first-child {
+    top: 0;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    HOME PAGE MENU
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-menu-categ-home-page-cont {
+    text-align: center;
+    margin-top: -6em;
+}
+
+#fd-11-o-clock-menu-categ-home-page-cont > div > p {
+    margin-left: 0em;
+    width: 22%;
+    font-size: 20px;
+    padding: 0;
+    border-radius: 5px;
+    font-family: 'Open sans';
+    font-weight: 700;
+    margin-bottom: 0;
+    position: relative;
+    top: -12px;
+}
+
+#fd-11-o-clock-menu-categ-home-page-cont > div > div > img {
+    cursor: pointer;
+    width: 100%;
+}
+
+#fd-11-o-clock-menu-categ-home-page-cont > div > div > p {
+    position: absolute;
+    width: 33%;
+    margin-top: -6em;
+    color: #fff;
+    font-size: 24px;
+    font-family: 'Open sans';
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#fd-11-o-clock-menu-categ-home-page-cont > div:nth-child(3) > div > p {
+    width: 50%;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    CAROUSEL DESCRIPTION MODAL
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+.fd-11-o-clock-home-page-carousel img {
+    cursor: pointer;
+}
+
+#fd-11-o-clock-carousel-description-modal-cont i.material-icons {
+    float: right;
+    position: relative;
+    top: -26px;
+    right: -9px;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+#fd-11-o-clock-carousel-description-modal-cont {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.85);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    z-index: 1;
+    display: none;
+}
+
+#fd-11-o-clock-carousel-description-modal-cont > div {
+    background-color: #fff;
+    margin: 0 auto;
+    width: 50%;
+    top: 10%;
+    position: relative;
+    padding: 2em 1em;
+    text-align: center;
+    border-radius: 5px;
+}
+
+#fd-11-o-clock-carousel-description-modal-cont > div > p {
+    margin-bottom: 5px;
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 auto;
+    width: 65%;
+}
+
+#fd-11-o-clock-carousel-description-modal-cont > div a {
+    background-color: #ff0050;
+    border: none;
+    color: #fff;
+    font-size: 17px;
+    padding: 8px 18px;
+    display: block;
+    width: 20%;
+    margin: 0 auto;
+    margin-top: 1em;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    TABBED HEADERS
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+.fd-11-o-clock-tabs {
+    background: #3e2f44;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+    height: 4em;
+    margin: 0;
+}
+
+.fd-11-o-clock-tabs li {
+    list-style: none;
+    display: inline-block;
+    margin-left: 2em;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.tabs-header-selected {
+    letter-spacing: 5px;
+}
+
+.tabs-header-selected:after,
+.tabs-header-selected:before {
+    -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+    border: 1px solid rgba(255, 255, 255, 1);
+    bottom: 0px;
+    content: " ";
+    display: block;
+    margin: 5px auto;
+    position: relative;
+    -webkit-transition: all 280ms ease-in-out;
+    transition: all 280ms ease-in-out;
+    width: 100%;
+}
+
+.tabs-header-deselected {
+  letter-spacing: 0;
+}
+
+.tabs-header-deselected:hover,
+.tabs-header-deselected:active {
+/*  letter-spacing: 5px;*/
+}
+
+.tabs-header-deselected:after,
+.tabs-header-deselected:before {
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+  border: 1px solid rgba(255, 255, 255, 0);
+  bottom: 0px;
+  content: " ";
+  display: block;
+  margin: 5px auto;
+  position: relative;
+  -webkit-transition: all 280ms ease-in-out;
+  transition: all 280ms ease-in-out;
+  width: 0;
+}
+
+.tabs-header-deselected:hover:after,
+.tabs-header-deselected:hover:before {
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+  border-color: #fff;
+  -webkit-transition: width 350ms ease-in-out;
+  transition: width 350ms ease-in-out;
+  width: 100%;
+}
+
+.tabs-header-deselected:hover:before {
+  bottom: auto;
+  top: 0;
+  width: 70%;
+}
+
+#fd-11-o-clock-menu-checkout-btn i {
+    position: relative;
+    top: 1px;
+    left: -4px;
+}
+
+.fd-11-o-clock-dishes-cont ul li {
+    font-size: 12px;
+    position: relative;
+    top: 3px;
+}
+
+.fd-11-o-clock-dishes-cont ul a {
+    color: #fff;
+}
+
+.row .col.fd-11-o-clock-dish-cont {
+    position: relative;
+    top: 26px;
+    z-index: 0;
+}
+
+.fd-11-o-clock-menu-checkout-btn {
+  font-weight: 100;
+}
+
+.fd-11-o-clock-menu-checkout-btn svg {
+  height: 45px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.fd-11-o-clock-menu-checkout-btn rect {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 4px;
+    stroke-dasharray: 422, 0;
+}
+
+.fd-11-o-clock-menu-checkout-btn:hover rect {
+  stroke-width: 4;
+  stroke-dasharray: 20, 244;
+  stroke-dashoffset: 81;
+  -webkit-transition: all 1.35s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: all 1.35s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+#fd-11-o-clock-menu-checkout-btn {
+    position: fixed;
+    cursor: pointer;
+    bottom: 3em;
+    right: 1em;
+    font-size: 2em;
+    border: none;
+    font-family: 'Open Sans';
+    font-style: italic;
+    padding: 0px 1em;
+    background: #ff9000;
+    height: 45px;
+    color: #fff;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    TERMS AND CONDITIONS
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-menu-checkout-terms-cont ol {
+    margin-top: 20px;
+}
+
+#fd-11-o-clock-menu-checkout-terms-cont ol li {
+    text-align: left;
+    font-size: 16px;
+    line-height: 2;
+    list-style-type: lower-roman;
+    margin-right: 1em;
+}
+
+#fd-11-o-clock-menu-checkout-terms-cont button#fd-11-o-clock-redirect-to-basket-btn {
+    border: none;
+    font-size: 24px;
+    padding: 10px 1em;
+    background-color: #ff0050;
+    color: #fff;
+    box-shadow: 0 0 2px #000;
+}
+
+[type="checkbox"]:checked+label:before {
+    border-right: 2px solid #ff0050;
+    border-bottom: 3px solid #ff0050;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    DISHES SUBCATEGORY
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-dishes-sub-category-cont div {
+    background-color: #fff;
+    margin: 15px 4px;
+    padding: 10px;
+    cursor: pointer;
+    position: relative;
+    left: 12%;
+    top: 1em;
+}
+
+#fd-11-o-clock-dishes-sub-category-cont {
+}
+
+#fd-11-o-clock-dishes-sub-category-cont p {
+    display: inline;
+    font-size: 14px;
+    margin-left: 1em;
+}
+
+#fd-11-o-clock-dishes-sub-category-cont img {
+    display: inline-block;
+    width: 20%;
+}
+
+#fd-11-o-clock-dishes-sub-category-cont i {
+    float: right;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    VEG NON VEG FILTER BAR
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-dishes-inner-cont #veg-non-veg-filter {
+    margin-top: 5px;
+}
+
+#fd-11-o-clock-dishes-inner-cont #veg-non-veg-filter input {
+    width: 30%;
+    background-color: #fff;
+}
+
+#fd-11-o-clock-dishes-inner-cont #veg-non-veg-filter p {
+    display: inline-block;
+    float: right;
+    cursor: pointer;
+    text-align: center;
+}
+
+#fd-11-o-clock-dishes-inner-cont #veg-non-veg-filter p img {
+    width: 38%;
+}
+
+#fd-11-o-clock-dishes-inner-cont #veg-non-veg-filter p.clear {
+    background-color: #fff;
+    font-family: 'Open sans';
+    font-weight: 700;
+    padding: 0px 5px;
+    position: relative;
+    top: 8px;
+    right: 2em;
+}
+
+#fd-11-o-clock-dishes-inner-cont p i {
+    position: relative;
+}
+
+#fd-11-o-clock-dishes-inner-cont p.clear span {
+    position: relative;
+    top: -3px;
+    left: 7px;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    DISHES CARDS
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-dishes-inner-cont #initial-msg {
+    background-color: #fff;
+    display: inline-block;
+    padding: 11px 25px;
+    position: relative;
+    top: 2em;
+    left: 16%;
+    font-size: 20px;
+    font-family: 'Open sans';
+    font-weight: 700;
+}
+
+.fd-11-o-clock-dishes-cont {
+    position: relative;
+    z-index: 0;
+}
+
+#fd-11-o-clock-dishes-card-cont {
+    display: inline-table;
+    width: 30%;
+    background-color: #fff;
+    position: relative;
+    top: 0;
+    margin-left: 2.5%;
+    border-radius: 10px;
+    height: 230px;
+    margin-top: 2em;
+}
+
+#fd-11-o-clock-dishes-card-cont i.heart {
+    position: absolute;
+    right: -7px;
+    top: 8px;
+    width: 14%;
+    cursor: pointer;
+    color: #dfdfdf;
+    font-size: 31px;
+}
+
+#fd-11-o-clock-dishes-card-cont i.loves-quant {
+    position: absolute;
+    right: 9px;
+    top: 42px;
+    font-size: 10px;
+    background-color: #dfdfdf;
+    padding: 0px 9px;
+    font-family: 'Open sans';
+}
+
+#fd-11-o-clock-dishes-card-cont img:first-child {
+    width: 97%;
+    margin: 5px 0px 0px 5px;
+    border-radius: 10px 10px 0 0;
+    float: none;
+}
+
+#fd-11-o-clock-dishes-card-cont p {
+    font-family: 'Open sans';
+    font-weight: bold;
+    font-style: italic;
+    font-size: 15px;
+    margin: 0;
+    position: relative;
+    top: 5px;
+    color: #444;
+    margin-left: 10px;
+}
+
+#fd-11-o-clock-dishes-card-cont p.closed_time {
+    float: right;
+    position: relative;
+    left: 76px;
+    margin-top: 1em;
+    color: #ff0090;
+    font-family: sans-serif;
+    font-weight: 700;
+}
+
+#fd-11-o-clock-dishes-card-cont p.fd-11-o-clock-dish-card-title {
+    width: 60%;
+    display: inline-block;
+}
+
+#fd-11-o-clock-dishes-card-cont p.fd-11-o-clock-dish-card-rate {
+    display: inline-block;
+    float: right;
+    left: -15%;
+}
+
+#fd-11-o-clock-dishes-card-cont img.fd-11-o-clock-dish-card-dish-type {
+    position: relative;
+    top: 0px;
+    left: 45px;
+}
+
+#fd-11-o-clock-dishes-card-cont span {
+    position: relative;
+}
+
+#fd-11-o-clock-dishes-card-cont p.fd-11-o-clock-dish-card-desc {
+    font-size: 14px;
+    width: 79%;
+    top: 10px;
+    font-weight: lighter;
+    line-height: 1.1;
+    min-height: 20px;
+}
+
+#fd-11-o-clock-dishes-card-cont p.fd-11-o-clock-dish-card-plus-minus-cont {
+    top: 10px;
+    width: 100%;
+    float: right;
+}
+
+#fd-11-o-clock-dishes-card-cont p.fd-11-o-clock-dish-card-plus-minus-cont img {
+    width: 14%;
+    float: right;
+    position: relative;
+    top: -7px;
+    left: -2px;
+    cursor: pointer;
+}
+
+#fd-11-o-clock-dishes-card-cont p.fd-11-o-clock-dish-card-plus-minus-cont img:nth-child(3) {
+    top: -2px;
+    left: -9px;
+}
+
+#fd-11-o-clock-dishes-card-cont p.fd-11-o-clock-dish-card-plus-minus-cont i {
+    float: right;
+    position: relative;
+    top: 9px;
+    left: -4px;
+    font-style: normal;
+    font-size: 21px;
+}
+
+#fd-11-o-clock-dishes-card-cont img {
+    float: right;
+    width: 10%;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    BASKET GLOBAL
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+.fd-11-o-clock-basket-body {
+    background: #dfdfdf;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    BASKET LOADER
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+.fd-11-o-clock-basket-items-cont #please-wait {
+    background-color: transparent;
+    box-shadow: 0 0 0;
+    margin: 0 auto;
+    top: 8px;
+    padding: 0
+}
+
+.fd-11-o-clock-basket-loader {
+	border-radius: 60px;
+	border: 3px solid rgba(255, 0, 50, 0.6);
+	height: 40px;
+	width: 40px;
+	position: relative;
+}
+
+.fd-11-o-clock-basket-loader:after {
+	content: "";
+    position: absolute;
+    background-color: rgba(255, 0, 50, 0.6);
+    top: 2px;
+    left: 47%;
+    height: 17px;
+    width: 4px;
+    border-radius: 5px;
+    -webkit-transform-origin: 50% 97%;
+    transform-origin: 50% 97%;
+    -webkit-animation: grdAiguille 2s linear infinite;
+    animation: grdAiguille 2s linear infinite;
+}
+
+.fd-11-o-clock-basket-loader:before {
+    content: "";
+    position: absolute;
+    background-color: rgba(255, 0, 50, 0.6);
+    top: 5px;
+    left: 47%;
+    height: 15px;
+    width: 4px;
+    border-radius: 5px;
+    -webkit-transform-origin: 50% 94%;
+    transform-origin: 50% 94%;
+    -webkit-animation: clockAnim 12s linear infinite;
+    animation: clockAnim 12s linear infinite;
+}
+
+@-webkit-keyframes grdAiguille {
+    0%{-webkit-transform:rotate(0deg);}
+    100%{-webkit-transform:rotate(360deg);}
+}
+
+@keyframes grdAiguille {
+    0%{transform:rotate(0deg);}
+    100%{transform:rotate(360deg);}
+}
+
+@-webkit-keyframes clockAnim {
+    0%{-webkit-transform:rotate(0deg);}
+    100%{-webkit-transform:rotate(360deg);}
+}
+
+@keyframes clockAnim {
+    0%{transform:rotate(0deg);}
+    100%{transform:rotate(360deg);}
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    EMPTY BASKET
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-empty-cart-cont {
+    text-align: center;
+    margin: 3em auto;
+}
+
+#fd-11-o-clock-empty-cart-cont p {
+    font-family: 'Open sans';
+    font-weight: bold;
+    font-style: italic;
+    font-size: 24px;
+    line-height: 0.6;
+}
+
+#fd-11-o-clock-empty-cart-cont a {
+    background-color: #3e2f44;
+    color: #fff;
+    font-size: 35px;
+    text-decoration: none;
+    position: relative;
+    display: block;
+    margin: 2em auto;
+    width: 13%;
+    padding: 20px;
+    font-family: 'Open sans';
+}
+
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    BASKET ITEMS
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+.fd-11-o-clock-basket-items-cont {
+    position: relative;
+    top: 0;
+    width: 34%;
+    text-align: center;
+}
+
+.fd-11-o-clock-basket-items-cont > div {
+    background: #fff;
+    padding: 5px 0;
+    margin-top: 3px;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+}
+
+.fd-11-o-clock-basket-items-cont div p {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 1.1em;
+    position: relative;
+    top: 8px;
+    font-weight: 700;
+    margin-left: 5px;
+}
+
+.fd-11-o-clock-basket-items-cont div p img {
+    width: 37%;
+    float: right;
+    cursor: pointer;
+}
+
+.fd-11-o-clock-basket-items-cont div i.material-icons {
+    float: right;
+    position: relative;
+    top: 8px;
+    right: 6px;
+    cursor: pointer;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    BASKET COUPON CODE
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-coupon-code-cont p {
+    display: inline-block;
+    width: 10%;
+    margin-bottom: 0;
+}
+
+#fd-11-o-clock-coupon-code-cont p img {
+    width: 80%;
+    float: left;
+    margin-left: 10px;
+    position: relative;
+    top: -10px;
+}
+
+#fd-11-o-clock-coupon-code-cont p input {
+    width: 100%;
+    border: none;
+    color: #00953b;
+    font-weight: 700;
+    font-size: 1.1em;
+    position: relative;
+    top: -8px;
+    background-color: #dfdfdf;
+    padding: 10px 4px;
+    text-transform: uppercase;
+}
+
+#fd-11-o-clock-coupon-code-cont p input:focus {
+    outline: none;
+}
+
+#fd-11-o-clock-coupon-code-cont p input::-webkit-input-placeholder {
+   color: rgba(0, 149, 59, 0.4);
+}
+
+#fd-11-o-clock-coupon-code-cont p input:-moz-placeholder { /* Firefox 18- */
+   color: rgba(0, 149, 59, 0.4);
+}
+
+#fd-11-o-clock-coupon-code-cont p input::-moz-placeholder {  /* Firefox 19+ */
+   color: rgba(0, 149, 59, 0.4);
+}
+
+#fd-11-o-clock-coupon-code-cont p input:-ms-input-placeholder {  
+   color: rgba(0, 149, 59, 0.4);
+}
+
+#fd-11-o-clock-coupon-code-cont p:nth-child(2) {
+    width: 50%;
+}
+
+#fd-11-o-clock-coupon-code-cont p:nth-child(3) {
+    float: right;
+    position: relative;
+    vertical-align: middle;
+    top: 4px;
+    margin-right: 15px;
+    background-color: #3e2f44;
+    padding: 5px 0px;
+    width: 20%;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    BASKET SUB TOTAL
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-sub-total-cont .fd-11-o-clock-sub-total, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-delivery-charge, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-coupon-disc, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-amount-payable {
+    text-align: center;
+    
+}
+
+#fd-11-o-clock-sub-total-cont .fd-11-o-clock-sub-total p, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-delivery-charge p, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-coupon-disc p, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-amount-payable p {
+    font-style: italic;
+    color: grey;
+    font-weight: 100;
+    width: 30%;
+    text-align: right;
+}
+
+#fd-11-o-clock-sub-total-cont .fd-11-o-clock-sub-total p span, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-delivery-charge p span, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-coupon-disc p span, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-amount-payable p span {
+    font-weight: 700;
+    color: #000;
+}
+
+#fd-11-o-clock-sub-total-cont .fd-11-o-clock-sub-total p:nth-child(2), #fd-11-o-clock-sub-total-cont .fd-11-o-clock-delivery-charge p:nth-child(2), #fd-11-o-clock-sub-total-cont .fd-11-o-clock-coupon-disc p:nth-child(2), #fd-11-o-clock-sub-total-cont .fd-11-o-clock-amount-payable p:nth-child(2) {
+    font-weight: 700;
+    color: #000;
+}
+
+#fd-11-o-clock-sub-total-cont .fd-11-o-clock-sub-total:nth-child(2) p:nth-child(2), #fd-11-o-clock-sub-total-cont .fd-11-o-clock-delivery-charge:nth-child(2) p:nth-child(2), #fd-11-o-clock-sub-total-cont .fd-11-o-clock-coupon-disc:nth-child(2) p:nth-child(2), #fd-11-o-clock-sub-total-cont .fd-11-o-clock-amount-payable:nth-child(2) p:nth-child(2) {
+    color: #00953b;
+    font-style: normal;
+}
+
+#fd-11-o-clock-sub-total-cont .fd-11-o-clock-sub-total:nth-child(3) p:nth-child(2), #fd-11-o-clock-sub-total-cont .fd-11-o-clock-delivery-charge:nth-child(3) p:nth-child(2), #fd-11-o-clock-sub-total-cont .fd-11-o-clock-coupon-disc:nth-child(3) p:nth-child(2), #fd-11-o-clock-sub-total-cont .fd-11-o-clock-amount-payable:nth-child(3) p:nth-child(2) {
+    color: #00953b;
+    font-style: normal;
+}
+
+#fd-11-o-clock-sub-total-cont .fd-11-o-clock-sub-total:nth-child(3) p:nth-child(2) span, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-delivery-charge:nth-child(3) p:nth-child(2) span, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-coupon-disc:nth-child(3) p:nth-child(2) span, #fd-11-o-clock-sub-total-cont .fd-11-o-clock-amount-payable:nth-child(3) p:nth-child(2) span {
+    color: #00953b;
+    font-style: normal;
+}
+
+#fd-11-o-clock-sub-total-cont hr {
+    width: 90%;
+    margin: 3px auto;
+    height: 6px;
+    display: block;
+    background: #dfdfdf;
+    border: none;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    BASKET ADDRESS
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+.fd-11-o-clock-basket-address-cont {
+    position: relative;
+    top: 0;
+    background: #fff;
+    padding: 1em;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    max-height: 460px;
+}
+
+.fd-11-o-clock-basket-address-cont P:first-child {
+    font-size: 1.5em;
+    font-weight: 700;
+}
+
+.fd-11-o-clock-basket-address-inp-row > div {
+    width: 45%;
+    margin-left: 1em;
+}
+
+.fd-11-o-clock-basket-address-cont input {
+    font-style: italic;
+}
+
+.fd-11-o-clock-basket-address-cont textarea.mdl-textfield__input {
+    font-style: italic;
+    color: #000;
+}
+
+.fd-11-o-clock-basket-address-cont input.mdl-textfield__input::-webkit-input-placeholder {
+    color: #000;
+    font-style: italic;
+    font-weight: 700;
+}
+
+.fd-11-o-clock-basket-address-cont input.mdl-textfield__input:-moz-placeholder { /* Firefox 18- */
+    color: #000;
+    font-style: italic;
+    font-weight: 700;
+}
+
+.fd-11-o-clock-basket-address-cont input.mdl-textfield__input::-moz-placeholder {  /* Firefox 19+ */
+    color: #000;
+    font-style: italic;
+    font-weight: 700;
+}
+
+.fd-11-o-clock-basket-address-cont input.mdl-textfield__input:-ms-input-placeholder {  
+    color: #000;
+    font-style: italic;
+    font-weight: 700;
+}
+
+.fd-11-o-clock-basket-address-cont p i.material-icons {
+    float: right;
+    position: relative;
+    top: -45px;
+    cursor: pointer;
+    display: none;
+}
+
+.fd-11-o-clock-basket-address-cont p i.material-icons:hover {
+    color: #ff0050;
+}
+
+#fd-11-o-clock-confirm-order-btn {
+    border: none;
+    background: #3e2f44;
+    color: #fff;
+    font-size: 2em;
+    width: 100%;
+    padding: 10px;
+    font-weight: 700;
+    box-shadow: 0 0 0;
+    height: 65px;
+    text-transform: none;
+}
+
+#fd-11-o-clock-confirm-order-btn:hover {
+    box-shadow: 0 12px 15px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    BASKET - PAYMENT OPTIONS MODAL
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-payment-option-modal {
+    display: none;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.8);
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+}
+
+#fd-11-o-clock-payment-option-modal > div {
+    background-color: #fff;
+    margin: 0 auto;
+    width: 30%;
+    position: relative;
+    top: 10em;
+    border-radius: 5px;
+    padding: 2em 0;
+    text-align: center;
+}
+
+#fd-11-o-clock-payment-option-modal p {
+    font-family: 'Open sans';
+    padding: 8px 12px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+#fd-11-o-clock-payment-option-modal p.online-payment {
+    background-color: #ff0050;
+    width: 60%;
+    margin: 2em auto;
+    color: #fff;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+#fd-11-o-clock-payment-option-modal p img {
+    width: 20%;
+}
+
+#fd-11-o-clock-payment-option-modal p.cod {
+    background-color: #a9a6a6;
+    margin: 0 auto;
+    width: 60%;
+    cursor: pointer;
+}
+
+#fd-11-o-clock-payment-option-modal p.title {
+    font-size: 18px;
+}
+
+#email-for-online-payment-modal {
+    position: fixed;
+    display: none;
+    top: 0;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.8);
+    width: 100%;
+    height: 100%;
+}
+
+#email-for-online-payment-modal > div {
+    margin: 0 auto;
+    background-color: #fff;
+    width: 26%;
+    top: 12em;
+    position: relative;
+    border-radius: 5px;
+    text-align: center;
+    padding: 2em 0em;
+}
+
+#email-for-online-payment-modal input {
+    border: none;
+    background-color: #dfdfdf;
+    font-size: 16px;
+    margin-bottom: 1em;
+    height: 32px;
+    width: 80%;
+    padding: 2px 5px;
+}
+
+#email-for-online-payment-modal button {
+    background-color: #ff0050;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    padding: 5px 16px;
+    border-radius: 5px;
+}
+
+#email-for-online-payment-modal input:focus {
+    outline: none;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    BASKET SAVED ADDRESSES LIST
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-basket-saved-addresses-modal {
+    position: fixed;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.8);
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    top: 0;    
+}
+
+#fd-11-o-clock-basket-saved-addresses-modal > div {
+    background-color: #fff;
+    width: 74%;
+    margin: 0 auto;
+    position: relative;
+    top: 5em;
+    border-radius: 5px;
+    padding: 2em 3em;
+}
+
+#fd-11-o-clock-basket-saved-addresses-modal > div > p.title {
+    text-align: center;
+    font-size: 22px;
+    color: #ff0050;
+    font-family: 'Open sans';
+    font-weight: 700;
+}
+
+#fd-11-o-clock-basket-saved-addresses-modal > div > div.saved-address-card {
+    background-color: #dfdfdf;
+    display: inline-block;
+    width: 20%;
+    margin-left: 10px;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#fd-11-o-clock-basket-saved-addresses-modal > div > div.saved-address-card:hover {
+   background-color: coral; 
+}
+
+#fd-11-o-clock-basket-saved-addresses-modal > div > div.saved-address-card p {
+    margin-bottom: 0px;
+    font-family: 'Open sans';
+    line-height: 1.5;
+    text-transform: capitalize;
+}
+
+#fd-11-o-clock-basket-saved-addresses-modal > div > div.new-address {
+    background-color: #7f9f9f;
+    color: #fff;
+    text-align: center;
+    position: relative;
+    top: -3em;
+    padding: 1em 1em;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    PROFILE USER DETAILS
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-action-bar-logout-btn {
+    float: right;
+    left: 7.5%;
+    position: relative;
+    top: -39px;
+    border: none;
+    font-size: 16px;
+    background-color: #fff;
+    padding: 4px 11px;
+    cursor: pointer;
+}
+
+.fd-11-o-clock-profile-body {
+    background: #e0dfe0;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-profile-user-details-cont, .fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont {
+    position: relative;
+    top: 0;
+    background-color: #fff;
+    padding: 1em 2em;
+    margin-left: 3em;
+    overflow: auto;
+    height: 400px;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-profile-user-details-cont > div {
+    display: inline-block;
+    height: 4em;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-profile-user-details-cont > div:nth-child(2) {
+    width: 50%;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-profile-user-details-cont > div > img {
+    position: relative;
+    top: -6em;
+    left: 0em;
+    width: 100%;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-profile-user-details-cont .fd-11-o-clock-profile-inp-cont img {
+    width: 12%;
+    position: relative;
+    top: -13px;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-profile-user-details-cont button {
+    float: right;
+    border: none;
+    font-size: 1.7em;
+    font-family: 'Open sans';
+    font-style: italic;
+    padding: 2px 1em;
+    background-color: #ff0050;
+    color: #fff;
+    cursor: pointer;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-profile-user-details-cont button:hover {
+    box-shadow: 0 12px 15px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.fd-11-o-clock-profile-container .mdl-textfield__input {
+    font-size: 14px;
+}
+
+.fd-11-o-clock-profile-container fieldset[disabled] .mdl-textfield .mdl-textfield__input, .fd-11-o-clock-profile-container .mdl-textfield.is-disabled .mdl-textfield__input {
+    color: #000;
+    border-bottom: 1px dotted rgba(0,0,0,.7);
+}
+
+.fd-11-o-clock-profile-container fieldset[disabled] .mdl-textfield .mdl-textfield__label, .fd-11-o-clock-profile-container .mdl-textfield.is-disabled.is-disabled .mdl-textfield__label {
+    color: #ff0050;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    PROFILE ORDER HISTORY
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont p {
+    font-family: 'Open sans';
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont p.fd-11-o-clock-order-hist-title {
+    font-weight: 700;
+    font-style: italic;
+    font-size: 20px;
+    color: #ff0050;
+    text-decoration: underline;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div {
+    background-color: #e0dfe0;
+    padding: 7px;
+    margin-top: 0em;
+    width: 45%;
+    display: inline-block;
+    margin-left: 10px;
+    cursor: pointer;
+    margin-bottom: 1em;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div table td span {
+    color: #ff0050;
+    font-size: 11px;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div table {
+    width: 100%;
+    margin-left: 12px;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div table td:nth-child(1) {
+    width: 85%;
+    font-size: 16px;
+    line-height: 1;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div table td:nth-child(2) {
+    width: 12%;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div table td:nth-child(3) {
+    width: 18%;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div p {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div p span:nth-child(2) {
+    margin-left: 4em;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div button.reorder {
+    float: right;
+    border: none;
+    background-color: #3e2f44;
+    color: #fff;
+    font-size: 18px;
+    padding: 7px 18px;
+    margin-top: 1em;
+    cursor: pointer;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div button.reorder:hover {
+    background-color: #ff0050;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    PROFILE SAVED ADDRESSES
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont {
+    position: relative;
+    background-color: #fff;
+    top: 0;
+    margin: 0 auto;
+    width: 93%;
+    padding: 2em;
+    left: -5px;
+    font-family: 'Open sans';
+    margin-bottom: 2em;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont .fd-11-o-clock-saved-addresses-title {
+    color: #ff0050;
+    font-size: 18px;
+    text-decoration: underline;
+    font-style: italic;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont > div {
+    background: #dfdfdf;
+    display: inline-block;
+    margin-left: 2em;
+    padding: 1em;
+    width: 18%;
+    margin-top: 1em;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont > div:nth-child(2) {
+    background: #fff;
+    font-size: 21px;
+    text-align: center;
+    cursor: pointer;
+    margin-left: 1em;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont > div:nth-child(2) i {
+    font-size: 55px;
+    color: #ff0050;
+    position: relative;
+    top: -6px;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont > div p {
+    line-height: 1;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont i.delete {
+    float: right;
+    position: relative;
+    top: -10px;
+    right: -12px;
+    cursor: pointer;
+}
+
+.fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont i.delete:hover {
+    color: #ff0050;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    PROFILE ADD NEW ADDRESS MODAL
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-profile-add-new-address-modal {
+    background-color: rgba(0, 0, 0, 0.8);
+    position: fixed;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+#fd-11-o-clock-profile-add-new-address-modal > div {
+    margin: 0 auto;
+    background-color: #fff;
+    width: 87%;
+    position: relative;
+    top: 5%;
+    padding: 10px 10px;
+    border-radius: 5px;
+    text-align: center;
+    overflow: auto;
+    max-height: 400px;
+}
+
+.fd-11-o-clock-profile-add-new-address-modal-cont button {
+    border: none;
+    font-size: 2em;
+    padding: 5px 1em;
+    color: #fff;
+    background-color: #ff0050;
+    cursor: pointer;
+}
+
+.fd-11-o-clock-profile-add-new-address-modal-cont > button:first-child {
+    left: 95%;
+    background: transparent;
+    color: #2b2e38;
+}
+
+.fd-11-o-clock-profile-add-new-address-modal-cont p {
+    font-size: 18px;
+    color: #ff0050;
+    font-family: 'Open sans';
+    font-style: italic;
+    text-decoration: underline;
+}
+
+.fd-11-o-clock-profile-add-new-address-modal-cont .fd-11-o-clock-add-new-add-inp-cont {
+    width: 39%;
+    margin-left: 2em;
+}
+
+.fd-11-o-clock-profile-add-new-address-modal-cont .mdl-textfield__label {
+    color: rgba(150,150,150,1);
+}
+
+.pac-container {
+    z-index: 10001;
+}
+
+#fd-11-o-clock-profile-food-preference-cont label span img {
+    width: 23%;
+    top: 0;
+}
+
+#fd-11-o-clock-profile-food-preference-cont .mdl-radio.is-upgraded {
+    left: 17%;
+}
+
+.mdl-radio.is-upgraded.fd-11-o-clock-edit-profile-inp-cont {
+    display: none;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ADD ONS MODAL
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-mobile-add-on-modal, #fd-11-o-clock-mobile-remove-items-addons-modal {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999999999;
+    height: 700px;
+    text-align: center;
+}
+
+#fd-11-o-clock-mobile-add-on-modal > div, #fd-11-o-clock-mobile-remove-items-addons-modal > div {
+    background-color: #fff;
+    margin: 3em auto;
+    width: 21%;
+    border-radius: 5px;
+    padding: 5px 12px;
+}
+
+#fd-11-o-clock-mobile-add-on-modal > div > div, #fd-11-o-clock-mobile-remove-items-addons-modal > div > div {
+    background-color: #dfdfdf;
+    padding: 9px 15px 8px 4px;
+    border-radius: 5px;
+    width: 89%;
+    margin: 0 auto;
+    margin-bottom: 11px;
+    text-align: left;
+}
+
+#fd-11-o-clock-mobile-remove-items-addons-modal > div > div {
+    padding: 11px 12px 8px 12px;
+}
+
+#fd-11-o-clock-mobile-add-on-modal p label {
+    color: #000;
+    font-family: 'Open sans';
+    font-style: italic;
+    width: 100%;
+}
+
+#fd-11-o-clock-mobile-add-on-modal p, #fd-11-o-clock-mobile-remove-items-addons-modal p {
+    margin-bottom: 5px;
+}
+
+#fd-11-o-clock-mobile-add-on-modal > div > p.title, #fd-11-o-clock-mobile-remove-items-addons-modal > div > p.title {
+    text-align: center;
+    top: 7px;
+    position: relative;
+    font-size: 16px;
+    font-family: 'Open sans';
+    font-weight: 600;
+}
+
+#fd-11-o-clock-mobile-remove-items-addons-modal p {
+    font-size: 11px;
+    width: 60%;
+    line-height: 1.3;
+    display: inline-block;
+}
+
+#fd-11-o-clock-mobile-remove-items-addons-modal > div > p.title {
+    font-size: 12px;
+    width: 100%;
+    line-height: inherit
+}
+
+#fd-11-o-clock-mobile-add-on-modal hr, #fd-11-o-clock-mobile-remove-items-addons-modal hr {
+    background-color: #ff0050;
+    height: 2px;
+    border: none;
+    width: 82%;
+    margin: 14px auto;
+}
+
+#fd-11-o-clock-mobile-add-on-modal p span {
+    float: right;
+}
+
+#fd-11-o-clock-mobile-add-on-modal [type="radio"]:not(:checked)+label:before, #fd-11-o-clock-mobile-add-on-modal [type="radio"]:not(:checked)+label:after {
+    border: 2px solid #ff0050;
+}
+
+#fd-11-o-clock-mobile-add-on-modal [type="radio"]:checked+label:after, #fd-11-o-clock-mobile-add-on-modal [type="radio"].with-gap:checked+label:after {
+    background-color: #ff0050;
+    border: 2px solid #ff0050;
+}
+
+#fd-11-o-clock-mobile-add-on-modal button {
+    font-size: 17px;
+    border: none;
+    text-align: center;
+    margin: 5px auto;
+    padding: 7px 20px;
+    background-color: #4b0049;
+    color: #fff;
+    border-radius: 5px;
+    font-family: 'Open sans';
+    font-style: italic;
+}
+
+#fd-11-o-clock-mobile-remove-items-addons-modal button {
+    display: inline-block;
+    border: none;
+    background-color: #fff;
+    float: right;
+    position: relative;
+    top: 0px;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    FOOTER
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-footer-cont {
+    font-family: TwoCent;
+    background-color: #3e2f44;
+    margin-top: 4em;
+    margin-bottom: -16px;
+}
+
+#fd-11-o-clock-footer-cont img {
+    width: 5%;
+    margin-top: -9em;
+    margin-left: 2em;
+}
+
+#fd-11-o-clock-footer-cont > div {
+    display: inline-block;
+    width: 48%;
+}
+
+#fd-11-o-clock-footer-cont > div.fb-like-footer-cont {
+    width: 16%;
+}
+
+#fd-11-o-clock-footer-cont > div > div {
+    display: inline-block;
+}
+
+#fd-11-o-clock-footer-cont > div > div.terms {
+    margin-bottom: 3em;
+}
+
+#fd-11-o-clock-footer-cont > div > div.fd-like-box {
+    position: relative;
+    top: 2em;
+}
+
+#fd-11-o-clock-footer-cont > div > div a {
+    color: #fff;
+    font-size: 27px;
+    text-decoration: underline;
+    margin-left: 2em;
+    display: inline-block;
+    margin-top: 1.5em;
+    font-weight: 700;
+}
+
+#fd-11-o-clock-footer-cont > div > div a:hover {
+    color: #ff0050;
+}
+
+#fd-11-o-clock-footer-cont p {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    TERMS AND CONDITIONS
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+
+#fd-11-o-clock-terms-body {
+    max-width: 100%;
+    width: 100%;
+}
+
+#fd-11-o-clock-terms-body h2 {
+    font-size: 2em;
+}
+
+#fd-11-o-clock-terms-body h4 {
+    font-size: 1.7em;
+}
+
+#fd-11-o-clock-terms-body h3 {
+    font-size: 1.2em;
+    font-weight: 700;
+}
+
+#fd-11-o-clock-terms-body div.terms {
+    padding: 1em 4em;
+}
+
+#fd-11-o-clock-terms-body img {
+    width: 3%;
+}
+
+#fd-11-o-clock-terms-body a img {
+    width: 5%;
+}
+
+#fd-11-o-clock-terms-body h4 img {
+    width: 12%;
+}
+
+#fd-11-o-clock-android-app-desc {
+    text-align: center;
+    margin-bottom: -4em;
+}
+
+#fd-11-o-clock-android-app-desc div a img {
+    position: relative;
+    top: 9em;
+    width: 30%;
+}
+
+#fd-11-o-clock-android-app-desc div p {
+    font-size: 21px;
+    position: relative;
+    top: 5em;
+    font-family: 'Open sans';
+    font-style: italic;
+}
+
+#fd-11-o-clock-android-app-desc div img {
+    width: 70%;
+}
+
+@media (max-width: 1024px) {
+    
+    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    RESPONSIVE - MEDIUM SCREEN DEVICES - HOME PAGE
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+    
+    #fd-11-o-clock-action-bar-user-btn {
+        left: 2em;
+    }
+    
+    #fd-11-o-clock-index-carousel {
+        height: 20em;
+    }
+    
+    .fd-11-o-clock-dishes-cont ul li {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    
+    .container {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+    
+    .fd-11-o-clock-basket-items-cont {
+        width: 100%;
+        margin: 0;
+    }
+    
+    .fd-11-o-clock-basket-items-cont > div {
+        padding: 0;
+        margin-top: 6px;
+    }
+    
+    .fd-11-o-clock-basket-items-cont div p img {
+        width: 50%;
+    }
+    
+    .fd-11-o-clock-basket-items-cont div p {
+        font-size: 12px;
+    }
+    
+    .fd-11-o-clock-basket-address-cont {
+        padding: 5px;
+        margin: 10px 0;
+        width: 100%;
+        max-height: 530px;
+    }
+    
+    .fd-11-o-clock-basket-address-inp-row > div {
+        width: 90%;
+    }
+    
+    #fd-11-o-clock-confirm-order-btn {
+        margin-bottom: 3em;
+    }
+    
+    #fd-11-o-clock-toast-cont {
+        top: 57px;
+    }
+    
+    .fd-11-o-clock-action-bar img {
+        width: 14%;
+    }
+    
+    #fd-11-o-clock-action-bar-user-btn {
+        left: 2em;
+        width: 23%;
+    }
+    
+    #fd-11-o-clock-coupon-code-cont p input {
+        font-size: 1em;
+    }
+    
+    #fd-11-o-clock-coupon-code-cont p#fd-11-o-clock-coupon-code-error {
+        width: 100%;
+        margin-bottom: 10px;
+        color: #f00;
+    }
+    
+    .fd-11-o-clock-action-bar {
+        width: 91%;
+    }
+    
+    #fd-11-o-clock-toast-cont {
+        width: 85%;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-profile-user-details-cont, .fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-profile-user-details-cont > div.fd-11-o-clock-profile-dp-img-cont {
+        width: 30%;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-profile-user-details-cont > div.fd-11-o-clock-profile-dp-img-cont img {
+        width: 128%;
+        left: -11px;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-profile-user-details-cont, .fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont {
+        padding: 1em 1em;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div {
+        margin-top: 10px;
+        width: 95%;
+        margin-left: 0;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div table {
+        margin-left: 0;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div p span {
+        font-size: 15px;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-order-hist-cont div p {
+        font-size: 15px;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont {
+        padding: 1em;
+        width: 96%;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont > div {
+        width: 90%;
+        padding: 1em;
+        margin-left: 0;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont > div:nth-child(2) {
+        margin-left: 0;
+        padding: 10px;
+    }
+    
+    #fd-11-o-clock-action-bar-logout-btn {
+        left: 3.5%;
+        font-size: 13px;
+    }
+    
+    .fd-11-o-clock-action-bar > div > p > a.basket {
+        display: none;
+    }
+    
+    .fd-11-o-clock-action-bar > div > p > a.home img {
+        width: 12%;
+        left: -3em;
+        top: -4px;
+    }
+    
+    #fd-11-o-clock-terms-body div.terms {
+        padding: 1em 1em;
+    }
+    
+    #fd-11-o-clock-terms-body img {
+        width: 16%;
+    }
+    
+    #fd-11-o-clock-terms-body a img {
+        display: none;
+    }
+    
+    #fd-11-o-clock-terms-body h4 {
+        font-size: 1.3em;
+    }
+    
+    #fd-11-o-clock-footer-cont > div > div.fd-like-box {
+        display: none;
+    }
+    
+    #fd-11-o-clock-footer-cont > div {
+        width: 84%;
+    }
+    
+    #fd-11-o-clock-footer-cont img {
+        width: 18%;
+        margin-left: 1em;
+        margin-top: 12px;
+    }
+    
+    #fd-11-o-clock-footer-cont > div > div a {
+        margin-left: 1em;
+        display: block;
+        margin-top: 1em;
+    }
+    
+    #fd-11-o-clock-phone-verification-modal > div {
+        width: 80%;
+    }
+    
+    .fd-11-o-clock-action-bar > div > p > a > img {
+        width: 12%;
+        top: -5px;
+        left: -3.5em;
+    }
+    
+    #fd-11-o-clock-empty-cart-cont img {
+        width: 48%;
+    }
+    
+    #fd-11-o-clock-empty-cart-cont p {
+        font-size: 17px;
+        line-height: 1.2;
+        margin-bottom: 0;
+    }
+    
+    #fd-11-o-clock-empty-cart-cont a {
+        font-size: 23px;
+        margin: 1em auto;
+        width: 24%;
+        padding: 11px;
+    }
+    
+    .fd-11-o-clock-profile-container .fd-11-o-clock-saved-addresses-cont > div p {
+        line-height: 1;
+    }
+    
+    .fd-11-o-clock-profile-add-new-address-modal-cont .fd-11-o-clock-add-new-add-inp-cont {
+        margin-left: 1em;
+        width: 95%;
+    }
+    
+    .remodal-close:before {
+        left: -20px;
+    }
+    
+    #fd-11-o-clock-action-bar-login-btn {
+        display: none;
+    }
+    
+    #fd-11-o-clock-coupon-code-cont p input {
+        top: -3px;
+    }
+    
+    #fd-11-o-clock-coupon-code-cont p img {
+        width: 119%;
+        float: left;
+        margin-left: -6px;
+        position: relative;
+        top: -3px;
+    }
+    
+    #fd-11-o-clock-terms-body h4 img {
+        width: 54%;
+    }
+    
+    #fd-11-o-clock-basket-saved-addresses-modal > div > div.saved-address-card {
+        width: 80%;
+    }
+    
+    #fd-11-o-clock-basket-saved-addresses-modal > div > div.new-address {
+        top: 0;
+    }
+
+}
